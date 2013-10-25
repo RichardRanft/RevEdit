@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serverlist version="1.0">
+  <server
+    description="PC3 EGM"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49206"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+    enableCacheAgentForFileContent="no"
+    enableCacheAgentForObjectProperties="no"
+  />
+  <server
+    description="PC3 Platform"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49205"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+  />
+  <server
+    description="PC3 Rapid"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49208"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+  />
+  <server
+    description="PC3 Vegas Star"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49207"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+    enableCacheAgentForFileContent="no"
+    enableCacheAgentForObjectProperties="no"
+  />
+  <server
+    description="PC4 EGM"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49210"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+  />
+  <server
+    description="PC4 Platform"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49209"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+  />
+  <server
+    description="PC4 Rapid"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49212"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+  />
+  <server
+    description="PC4 Table Master"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49217"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+  />
+  <server
+    description="PC4 Vegas Star"
+    host="StarTeam.australia.shufflemaster.com"
+    endpoint="49211"
+    compression="no"
+    encryption="none"
+    protocol="6"
+    cacheAgentAddress=""
+    cacheAgentPort="5201"
+    cacheAgentThreadCount="3"
+  />
+</serverlist>
