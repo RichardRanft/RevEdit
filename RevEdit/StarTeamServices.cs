@@ -51,6 +51,8 @@ namespace RevEdit
 
         Server m_server;
 
+        # region Accessors
+
         public DateTime CutoffDate
         {
             get
@@ -173,6 +175,8 @@ namespace RevEdit
             }
         }
 
+        # endregion
+
         // Creates a StarTeam server object, connects to the server, and logs in.
         // Returns the resulting Server object.
         public Server GetServer()
@@ -192,7 +196,25 @@ namespace RevEdit
 
         public bool logIn()
         {
-            return false;
+            // Create the Server object.
+            if (m_server == null)
+                m_server = new Server(m_strServer, m_nPort);
+
+            if (m_server == null)
+                return false;
+
+            // LogOn to the server.
+            m_server.LogOn(m_strUser, m_strPassword);
+
+            // Determine which Item Types to display.
+            m_stItemTypes = ResolveItemTypes(m_server, m_strTypeNames);
+
+            return true;
+        }
+
+        public void disconnect()
+        {
+            m_server.Disconnect();
         }
 
         public List<String> getProjectList()
