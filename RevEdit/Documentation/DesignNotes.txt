@@ -1,0 +1,21 @@
+﻿The editor should enforce the 70 column width maximum mercilessly.
+
+The user should be able to log into StarTeam, check out the latest revision.txt 
+for a project, update it and check it back in.  Should also be able to add a 
+label from within the tool after check-in, or as part of the check-in process.
+
+The editor already keeps some configuration data in the user's registry, add more
+as needed.
+
+Game Selection:
+The user should be able to browse the PC4 EGM server for game projects.  The 
+project browser will filter out all projects that don't begin with "PC4G" since
+all game projects begin with this tag.
+
+Once a game is selected the editor will populate the view combo box.  The user
+can select the correct view from the list.  This might be better displayed as 
+a tree view given the hierarchical nature of the data.
+
+Selecting the view should then populate the two label combo boxes.  Selecting 
+a starting label should cause the ending label combo box to select the next 
+label in the set such that the end is never earlier than the start.
