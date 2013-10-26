@@ -222,21 +222,78 @@ namespace RevEdit
             List<String> projectList = new List<String>();
             // get a list of projects on the server
             // filter out anything that doesn't start with "PC4G"
+            foreach (Project stProject in m_server.Projects)
+            {
+                int check = String.Compare("PC4G", 0, stProject.Name, 0, 4);
+                if (check == 0)
+                    projectList.Add(stProject.Name);
+            }
             return projectList;
         }
 
-        public List<String> getViewList()
+        public List<String> getViewList(String project)
         {
             List<String> viewList = new List<String>();
+            List<String> subViews = new List<String>();
             // get a list of views in this project
+            Project stProject = m_server.Projects.FindByName(project, true);
+            Borland.StarTeam.ViewCollection projectViews = stProject.DefaultView.DerivedViews;
+
+            // For each view ...
+            foreach (Borland.StarTeam.View stView in projectViews)
+            {
+                viewList.Add(stView.Name);
+                subViews = getSubviews(stView);
+                if (subViews.Count > 0)
+                {
+                    foreach (String view in subViews)
+                        viewList.Add(view);
+                }
+            }
+
             return viewList;
         }
 
-        public List<String> getLabelList()
+        public List<String> getLabelList(String project, String view)
         {
             List<String> labelList = new List<String>();
             // get a list of labels
+            Project stProject = m_server.Projects.FindByName(project, true);
+            Borland.StarTeam.ViewCollection projectViews = stProject.DefaultView.DerivedViews;
+            Borland.StarTeam.LabelCollection labels = new LabelCollection();
+
+            // For each view ...
+            foreach (Borland.StarTeam.View stView in projectViews)
+            {
+                if (stView.Name.Trim() == view.Trim())
+                {
+                    labels = stView.Labels;
+                    foreach (Borland.StarTeam.Label label in labels)
+                    {
+                        labelList.Add(label.Name);
+                    }
+                }
+            }
             return labelList;
+        }
+
+        private List<String> getSubviews(Borland.StarTeam.View stView)
+        {
+            List<String> list = new List<String>();
+            if (stView.DerivedViews.Count > 0)
+            {
+                // For each Item Type ...
+                foreach (Borland.StarTeam.View v in stView.DerivedViews)
+                {
+                    list.Add("  " + v.Name);
+                    if (v.DerivedViews.Count > 0)
+                    {
+                        List<String> subList = new List<String>();
+                        subList = getSubviews(v);
+                    }
+                }
+            }
+            return list;
         }
 
         // Finds the test project.

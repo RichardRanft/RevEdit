@@ -40,20 +40,20 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.cbViewList = new System.Windows.Forms.ComboBox();
+            this.cbStartLabelList = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.cbEndLabelList = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.tbPrevVersion = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.cbCurrVersion = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cbProjectList = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -161,13 +161,6 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Game Project";
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(13, 45);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(278, 20);
-            this.textBox1.TabIndex = 6;
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -177,21 +170,24 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "View";
             // 
-            // comboBox1
+            // cbViewList
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(13, 85);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(278, 21);
-            this.comboBox1.TabIndex = 8;
+            this.cbViewList.FormattingEnabled = true;
+            this.cbViewList.Location = new System.Drawing.Point(13, 85);
+            this.cbViewList.Name = "cbViewList";
+            this.cbViewList.Size = new System.Drawing.Size(278, 21);
+            this.cbViewList.TabIndex = 8;
+            this.cbViewList.Text = "Select a view...";
+            this.cbViewList.SelectedIndexChanged += new System.EventHandler(this.cbViewList_SelectedIndexChanged);
             // 
-            // comboBox2
+            // cbStartLabelList
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(13, 126);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(278, 21);
-            this.comboBox2.TabIndex = 10;
+            this.cbStartLabelList.FormattingEnabled = true;
+            this.cbStartLabelList.Location = new System.Drawing.Point(13, 126);
+            this.cbStartLabelList.Name = "cbStartLabelList";
+            this.cbStartLabelList.Size = new System.Drawing.Size(278, 21);
+            this.cbStartLabelList.TabIndex = 10;
+            this.cbStartLabelList.Text = "Select the starting label...";
             // 
             // label3
             // 
@@ -202,13 +198,13 @@
             this.label3.TabIndex = 9;
             this.label3.Text = "Start Label";
             // 
-            // comboBox3
+            // cbEndLabelList
             // 
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(13, 167);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(278, 21);
-            this.comboBox3.TabIndex = 12;
+            this.cbEndLabelList.FormattingEnabled = true;
+            this.cbEndLabelList.Location = new System.Drawing.Point(13, 167);
+            this.cbEndLabelList.Name = "cbEndLabelList";
+            this.cbEndLabelList.Size = new System.Drawing.Size(278, 21);
+            this.cbEndLabelList.TabIndex = 12;
             // 
             // label4
             // 
@@ -219,12 +215,12 @@
             this.label4.TabIndex = 11;
             this.label4.Text = "End Label";
             // 
-            // textBox2
+            // tbPrevVersion
             // 
-            this.textBox2.Location = new System.Drawing.Point(297, 126);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(278, 20);
-            this.textBox2.TabIndex = 14;
+            this.tbPrevVersion.Location = new System.Drawing.Point(297, 126);
+            this.tbPrevVersion.Name = "tbPrevVersion";
+            this.tbPrevVersion.Size = new System.Drawing.Size(278, 20);
+            this.tbPrevVersion.TabIndex = 14;
             // 
             // label5
             // 
@@ -235,12 +231,12 @@
             this.label5.TabIndex = 13;
             this.label5.Text = "Previous Version";
             // 
-            // textBox3
+            // cbCurrVersion
             // 
-            this.textBox3.Location = new System.Drawing.Point(297, 167);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(278, 20);
-            this.textBox3.TabIndex = 16;
+            this.cbCurrVersion.Location = new System.Drawing.Point(297, 167);
+            this.cbCurrVersion.Name = "cbCurrVersion";
+            this.cbCurrVersion.Size = new System.Drawing.Size(278, 20);
+            this.cbCurrVersion.TabIndex = 16;
             // 
             // label6
             // 
@@ -276,24 +272,34 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
+            // cbProjectList
+            // 
+            this.cbProjectList.FormattingEnabled = true;
+            this.cbProjectList.Location = new System.Drawing.Point(13, 45);
+            this.cbProjectList.Name = "cbProjectList";
+            this.cbProjectList.Size = new System.Drawing.Size(278, 21);
+            this.cbProjectList.TabIndex = 19;
+            this.cbProjectList.Text = "Select a game project...";
+            this.cbProjectList.SelectedIndexChanged += new System.EventHandler(this.cbProjectList_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 653);
+            this.Controls.Add(this.cbProjectList);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.cbCurrVersion);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.tbPrevVersion);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.comboBox3);
+            this.Controls.Add(this.cbEndLabelList);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.cbStartLabelList);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.cbViewList);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.lCharCount);
@@ -304,6 +310,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Revision Text Editor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -327,20 +334,20 @@
         private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox cbViewList;
+        private System.Windows.Forms.ComboBox cbStartLabelList;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox cbEndLabelList;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox tbPrevVersion;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox cbCurrVersion;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ComboBox cbProjectList;
     }
 }
 

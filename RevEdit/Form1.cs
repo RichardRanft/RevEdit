@@ -58,6 +58,13 @@ namespace RevEdit
                 else
                     return;
                 serviceProvider.logIn();
+                List<String> list = serviceProvider.getProjectList();
+                list.Sort();
+                foreach (String projectName in list)
+                {
+                    cbProjectList.Items.Add(projectName);
+                }
+                cbProjectList.Refresh();
                 toolStripStatusLabel1.Text = "Logged in.";
             }
         }
@@ -210,6 +217,30 @@ namespace RevEdit
         private void button2_Click(object sender, EventArgs e)
         {
             serviceProvider.disconnect();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            serviceProvider.disconnect();
+        }
+
+        private void cbProjectList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            List<String> list = serviceProvider.getViewList(cbProjectList.SelectedItem.ToString());
+            foreach (String view in list)
+            {
+                cbViewList.Items.Add(view);
+            }
+        }
+
+        private void cbViewList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            List<String> list = serviceProvider.getLabelList(cbProjectList.SelectedItem.ToString(), cbViewList.SelectedItem.ToString());
+            foreach (String label in list)
+            {
+                cbStartLabelList.Items.Add(label);
+                cbEndLabelList.Items.Add(label);
+            }
         }
     }
 }
