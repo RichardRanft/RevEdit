@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevEdit", "RevEdit\RevEdit.csproj", "{5E3FA56E-C184-4805-92A0-C8933F29EBBE}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{00A963FF-6519-4141-B79B-8FDD2C468EEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,8 @@ Global
 		{5E3FA56E-C184-4805-92A0-C8933F29EBBE}.Debug|x86.Build.0 = Debug|x86
 		{5E3FA56E-C184-4805-92A0-C8933F29EBBE}.Release|x86.ActiveCfg = Release|x86
 		{5E3FA56E-C184-4805-92A0-C8933F29EBBE}.Release|x86.Build.0 = Release|x86
+		{00A963FF-6519-4141-B79B-8FDD2C468EEB}.Debug|x86.ActiveCfg = Debug
+		{00A963FF-6519-4141-B79B-8FDD2C468EEB}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

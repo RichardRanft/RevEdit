@@ -17,6 +17,7 @@ namespace RevEdit
         private String m_strTempPath;
         private bool m_boolAutoLogin;
         private RegistryKey m_keyCurrentUser;
+        private RegistryKey m_keySettings;
 
         # region Accessors
 
@@ -70,59 +71,60 @@ namespace RevEdit
             try
             {
                 if (Registry.CurrentUser != null)
+                {
                     this.m_keyCurrentUser = Registry.CurrentUser;
+                    String[] subKeys = m_keyCurrentUser.GetSubKeyNames();
+                    bool found = false;
+                    foreach (String key in subKeys)
+                    {
+                        if (key == "Software\\SHFL\\Applications\\RevEdit")
+                            found = true;
+                    }
+                    if (found)
+                    {
+                        m_keySettings = m_keyCurrentUser.OpenSubKey("Software\\SHFL\\Applications\\RevEdit");
+                    }
+                    else
+                    {
+                        m_keySettings = m_keyCurrentUser.CreateSubKey("Software\\SHFL\\Applications\\RevEdit", RegistryKeyPermissionCheck.ReadWriteSubTree);
+                    }
+                }
             }
             catch (Exception rException)
             {
                 System.Windows.Forms.MessageBox.Show("Error code:\n" + rException.Message.ToString(), "Error Accessing Registry", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
-            validateKey();
-            if (m_keyCurrentUser.GetValue("TempFolder") != null)
+            if (m_keySettings.GetValue("TempFolder") != null)
             {
-                tbTempPath.Text = m_keyCurrentUser.GetValue("TempFolder").ToString();
+                tbTempPath.Text = m_keySettings.GetValue("TempFolder").ToString();
                 m_strTempPath = tbTempPath.Text;
             }
-            if (m_keyCurrentUser.GetValue("UserName") != null)
+            if (m_keySettings.GetValue("UserName") != null)
             {
-                tbUserName.Text = m_keyCurrentUser.GetValue("UserName").ToString();
+                tbUserName.Text = m_keySettings.GetValue("UserName").ToString();
                 m_strUser = tbUserName.Text;
             }
-            if (m_keyCurrentUser.GetValue("Password") != null)
+            if (m_keySettings.GetValue("Password") != null)
             {
-                tbPassword.Text = m_keyCurrentUser.GetValue("Password").ToString();
+                tbPassword.Text = m_keySettings.GetValue("Password").ToString();
                 m_strPassword = tbPassword.Text;
             }
-            if (m_keyCurrentUser.GetValue("AutoLogin") != null)
+            if (m_keySettings.GetValue("AutoLogin") != null)
             {
-                cbAutoLogin.Checked = Convert.ToBoolean(m_keyCurrentUser.GetValue("AutoLogin").ToString());
+                cbAutoLogin.Checked = Convert.ToBoolean(m_keySettings.GetValue("AutoLogin").ToString());
                 m_boolAutoLogin = cbAutoLogin.Checked;
-            }
-        }
-
-        private void validateKey()
-        {
-            String[] names = m_keyCurrentUser.GetSubKeyNames();
-            bool found = false;
-            foreach (String s in names)
-            {
-                if (s == "Software\\Microsoft\\SHFL\\Applications\\RevEdit")
-                    found = true;
-            }
-            if (!found)
-            {
-                m_keyCurrentUser.CreateSubKey("Software\\Microsoft\\SHFL\\Applications\\RevEdit", RegistryKeyPermissionCheck.ReadWriteSubTree);
             }
         }
 
         private void bOK_Click(object sender, EventArgs e)
         {
-            m_keyCurrentUser.SetValue("TempFolder", tbTempPath.Text);
+            m_keySettings.SetValue("TempFolder", tbTempPath.Text);
             m_strTempPath = tbTempPath.Text;
-            m_keyCurrentUser.SetValue("UserName", tbUserName.Text);
+            m_keySettings.SetValue("UserName", tbUserName.Text);
             m_strUser = tbUserName.Text;
-            m_keyCurrentUser.SetValue("Password", tbPassword.Text);
+            m_keySettings.SetValue("Password", tbPassword.Text);
             m_strPassword = tbPassword.Text;
-            m_keyCurrentUser.SetValue("AutoLogin", cbAutoLogin.Checked.ToString());
+            m_keySettings.SetValue("AutoLogin", cbAutoLogin.Checked.ToString());
             m_boolAutoLogin = cbAutoLogin.Checked;
         }
     }

@@ -39,6 +39,7 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.cbViewList = new System.Windows.Forms.ComboBox();
@@ -50,26 +51,34 @@
             this.label5 = new System.Windows.Forms.Label();
             this.cbCurrVersion = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.bLogin = new System.Windows.Forms.Button();
+            this.bDisconnect = new System.Windows.Forms.Button();
             this.cbProjectList = new System.Windows.Forms.ComboBox();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.bSearch = new System.Windows.Forms.Button();
+            this.bCheckin = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tbNewLabel = new System.Windows.Forms.TextBox();
+            this.cbCreateLabel = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbRevisionText
             // 
-            this.tbRevisionText.Location = new System.Drawing.Point(12, 216);
+            this.tbRevisionText.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbRevisionText.Location = new System.Drawing.Point(12, 224);
+            this.tbRevisionText.MinimumSize = new System.Drawing.Size(626, 404);
             this.tbRevisionText.Multiline = true;
             this.tbRevisionText.Name = "tbRevisionText";
-            this.tbRevisionText.Size = new System.Drawing.Size(626, 412);
+            this.tbRevisionText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbRevisionText.Size = new System.Drawing.Size(626, 404);
             this.tbRevisionText.TabIndex = 0;
             this.tbRevisionText.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.tbRevisionText_PreviewKeyDown);
             // 
             // lColumn
             // 
-            this.lColumn.Location = new System.Drawing.Point(591, 190);
+            this.lColumn.Location = new System.Drawing.Point(591, 199);
             this.lColumn.Name = "lColumn";
             this.lColumn.Size = new System.Drawing.Size(48, 23);
             this.lColumn.TabIndex = 1;
@@ -78,7 +87,7 @@
             // 
             // lCharCount
             // 
-            this.lCharCount.Location = new System.Drawing.Point(556, 167);
+            this.lCharCount.Location = new System.Drawing.Point(556, 176);
             this.lCharCount.Name = "lCharCount";
             this.lCharCount.Size = new System.Drawing.Size(83, 23);
             this.lCharCount.TabIndex = 2;
@@ -145,12 +154,19 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 631);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(651, 22);
             this.statusStrip1.TabIndex = 4;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // label1
             // 
@@ -188,6 +204,7 @@
             this.cbStartLabelList.Size = new System.Drawing.Size(278, 21);
             this.cbStartLabelList.TabIndex = 10;
             this.cbStartLabelList.Text = "Select the starting label...";
+            this.cbStartLabelList.SelectedIndexChanged += new System.EventHandler(this.cbStartLabelList_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -205,6 +222,7 @@
             this.cbEndLabelList.Name = "cbEndLabelList";
             this.cbEndLabelList.Size = new System.Drawing.Size(278, 21);
             this.cbEndLabelList.TabIndex = 12;
+            this.cbEndLabelList.SelectedIndexChanged += new System.EventHandler(this.cbEndLabelList_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -247,30 +265,25 @@
             this.label6.TabIndex = 15;
             this.label6.Text = "Current Version";
             // 
-            // button1
+            // bLogin
             // 
-            this.button1.Location = new System.Drawing.Point(297, 43);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 17;
-            this.button1.Text = "Login";
-            this.button1.UseVisualStyleBackColor = true;
+            this.bLogin.Location = new System.Drawing.Point(297, 43);
+            this.bLogin.Name = "bLogin";
+            this.bLogin.Size = new System.Drawing.Size(75, 23);
+            this.bLogin.TabIndex = 17;
+            this.bLogin.Text = "Login";
+            this.bLogin.UseVisualStyleBackColor = true;
+            this.bLogin.Click += new System.EventHandler(this.bLogin_Click);
             // 
-            // button2
+            // bDisconnect
             // 
-            this.button2.Location = new System.Drawing.Point(378, 43);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 18;
-            this.button2.Text = "Disconnect";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            this.bDisconnect.Location = new System.Drawing.Point(378, 43);
+            this.bDisconnect.Name = "bDisconnect";
+            this.bDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.bDisconnect.TabIndex = 18;
+            this.bDisconnect.Text = "Disconnect";
+            this.bDisconnect.UseVisualStyleBackColor = true;
+            this.bDisconnect.Click += new System.EventHandler(this.button2_Click);
             // 
             // cbProjectList
             // 
@@ -282,14 +295,72 @@
             this.cbProjectList.Text = "Select a game project...";
             this.cbProjectList.SelectedIndexChanged += new System.EventHandler(this.cbProjectList_SelectedIndexChanged);
             // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
+            // 
+            // bSearch
+            // 
+            this.bSearch.Location = new System.Drawing.Point(12, 195);
+            this.bSearch.Name = "bSearch";
+            this.bSearch.Size = new System.Drawing.Size(75, 23);
+            this.bSearch.TabIndex = 20;
+            this.bSearch.Text = "Search";
+            this.bSearch.UseVisualStyleBackColor = true;
+            this.bSearch.Click += new System.EventHandler(this.bSearch_Click);
+            // 
+            // bCheckin
+            // 
+            this.bCheckin.Location = new System.Drawing.Point(94, 195);
+            this.bCheckin.Name = "bCheckin";
+            this.bCheckin.Size = new System.Drawing.Size(75, 23);
+            this.bCheckin.TabIndex = 21;
+            this.bCheckin.Text = "Check In";
+            this.bCheckin.UseVisualStyleBackColor = true;
+            this.bCheckin.Click += new System.EventHandler(this.bCheckin_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(176, 200);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(61, 13);
+            this.label7.TabIndex = 22;
+            this.label7.Text = "New Label:";
+            // 
+            // tbNewLabel
+            // 
+            this.tbNewLabel.Location = new System.Drawing.Point(241, 197);
+            this.tbNewLabel.Name = "tbNewLabel";
+            this.tbNewLabel.Size = new System.Drawing.Size(142, 20);
+            this.tbNewLabel.TabIndex = 23;
+            // 
+            // cbCreateLabel
+            // 
+            this.cbCreateLabel.AutoSize = true;
+            this.cbCreateLabel.Location = new System.Drawing.Point(390, 199);
+            this.cbCreateLabel.Name = "cbCreateLabel";
+            this.cbCreateLabel.Size = new System.Drawing.Size(107, 17);
+            this.cbCreateLabel.TabIndex = 24;
+            this.cbCreateLabel.Text = "Create this label?";
+            this.cbCreateLabel.UseVisualStyleBackColor = true;
+            this.cbCreateLabel.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 653);
+            this.Controls.Add(this.cbCreateLabel);
+            this.Controls.Add(this.tbNewLabel);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.bCheckin);
+            this.Controls.Add(this.bSearch);
             this.Controls.Add(this.cbProjectList);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.bDisconnect);
+            this.Controls.Add(this.bLogin);
             this.Controls.Add(this.cbCurrVersion);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.tbPrevVersion);
@@ -344,10 +415,16 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox cbCurrVersion;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button bLogin;
+        private System.Windows.Forms.Button bDisconnect;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ComboBox cbProjectList;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.Button bSearch;
+        private System.Windows.Forms.Button bCheckin;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox tbNewLabel;
+        private System.Windows.Forms.CheckBox cbCreateLabel;
     }
 }
 

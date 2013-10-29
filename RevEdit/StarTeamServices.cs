@@ -28,6 +28,7 @@ namespace RevEdit
         private string m_strView = null;				// View name; null searches default view
         private string m_strFolder = null;				// Folder path; null searches the root folder
         private bool m_bRecursive = true;				// true if subfolders are searched recursively
+        private String m_tempFilePath = Environment.CurrentDirectory;
 
         // Item Type Names specified on the command line.
         private StringCollection m_strTypeNames = new StringCollection();
@@ -38,18 +39,9 @@ namespace RevEdit
         private DateTime m_cutoffDate = DateTime.Now;	// List items last modified since this date
         private bool m_bUseDateFilter = false;			// True to filter by m_cuttoffDate
 
-        private bool m_bVerbose = false;				// true for verbose output
-
         // Used when writing header information to output.
-        private int m_prevProjectID = -1;
-        private int m_prevViewID = -1;
-        private int m_prevTypeID = -1;
-        private int m_prevFolderID = -1;
-        private bool m_bShowHeader = true;
-        private System.Windows.Forms.Label m_status;
-        private TreeView m_output;
-
         Server m_server;
+        File m_revisionFile;
 
         # region Accessors
 
@@ -62,17 +54,6 @@ namespace RevEdit
             set
             {
                 m_cutoffDate = value;
-            }
-        }
-        public System.Windows.Forms.Label Status
-        {
-            get
-            {
-                return m_status;
-            }
-            set
-            {
-                m_status = value;
             }
         }
         public bool UseDateFilter
@@ -97,6 +78,17 @@ namespace RevEdit
                 m_strServer = value;
             }
         }
+        public String TempFilePath
+        {
+            get
+            {
+                return m_tempFilePath;
+            }
+            set
+            {
+                m_tempFilePath = value;
+            }
+        }
         public bool Recursive
         {
             get
@@ -106,17 +98,6 @@ namespace RevEdit
             set
             {
                 m_bRecursive = value;
-            }
-        }
-        public TreeView Output
-        {
-            get
-            {
-                return m_output;
-            }
-            set
-            {
-                m_output = value;
             }
         }
         public int Port
@@ -214,7 +195,8 @@ namespace RevEdit
 
         public void disconnect()
         {
-            m_server.Disconnect();
+            if (m_server != null)
+                m_server.Disconnect();
         }
 
         public List<String> getProjectList()
@@ -259,22 +241,38 @@ namespace RevEdit
             List<String> labelList = new List<String>();
             // get a list of labels
             Project stProject = m_server.Projects.FindByName(project, true);
-            Borland.StarTeam.ViewCollection projectViews = stProject.DefaultView.DerivedViews;
-            Borland.StarTeam.LabelCollection labels = new LabelCollection();
+            Borland.StarTeam.View stView = stProject.Views.FindByName(view, true);
+            Borland.StarTeam.Label[] labels = stView.FetchAllLabels();
 
             // For each view ...
-            foreach (Borland.StarTeam.View stView in projectViews)
+            foreach (Borland.StarTeam.Label l in labels)
             {
-                if (stView.Name.Trim() == view.Trim())
+                labelList.Add(l.Name);
+            }
+            return labelList;
+        }
+
+        private Borland.StarTeam.LabelCollection getLabelFromSubview(Borland.StarTeam.View stView, String viewName)
+        {
+            // get a list of labels
+            LabelCollection Labels = new LabelCollection();
+            if (stView.Name == viewName)
+            {
+                Labels = stView.Labels;
+            }
+            Borland.StarTeam.ViewCollection subViews = stView.DerivedViews;
+            if (subViews.Count > 0)
+            {
+                // For each view ...
+                foreach (Borland.StarTeam.View subView in subViews)
                 {
-                    labels = stView.Labels;
-                    foreach (Borland.StarTeam.Label label in labels)
+                    if (subView.Name == viewName)
                     {
-                        labelList.Add(label.Name);
+                        Labels = subView.Labels;
                     }
                 }
             }
-            return labelList;
+            return Labels;
         }
 
         private List<String> getSubviews(Borland.StarTeam.View stView)
@@ -296,32 +294,115 @@ namespace RevEdit
             return list;
         }
 
+        public bool checkoutRevisionFile()
+        {
+            Borland.StarTeam.Item revFile;
+            if (getRevisionFile(m_strProject, m_strView, out revFile))
+            {
+                m_revisionFile = (File)revFile;
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(m_tempFilePath+"\\revision.txt");
+                m_revisionFile.CheckoutTo(fileInfo, Item.LockType.UNCHANGED, false, true, true);
+                return true;
+            }
+            return false;
+        }
+
+        public bool checkinRevisionFile(String revPath)
+        {
+            Project proj = m_server.Projects.FindByName(m_strProject, true);
+            Borland.StarTeam.View view = proj.Views.FindByName(m_strView, true);
+            CheckinOptions options = new CheckinOptions(view);
+            if (m_revisionFile != null)
+            {
+                m_revisionFile.Checkin(options);
+                return true;
+            }
+            Borland.StarTeam.Folder rootFolder = view.RootFolder;
+            Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
+            Borland.StarTeam.CheckinManager manager = view.CreateCheckinManager();
+            m_revisionFile = new File(docFolder);
+            m_revisionFile.Name = "revision.txt";
+            System.IO.FileInfo revFile = new System.IO.FileInfo(revPath);
+            manager.CheckinFrom(m_revisionFile, revFile);
+
+            return true;
+        }
+
+        public bool createLabel(String label)
+        {
+            Project proj = m_server.Projects.FindByName(m_strProject, true);
+            Borland.StarTeam.View view = proj.Views.FindByName(m_strView, true);
+            Borland.StarTeam.Label newLabel = view.CreateRevisionLabel(label, "", false);
+
+            if (newLabel != null)
+                return true;
+
+            return false;
+        }
+
+        private bool getRevisionFile(String project, String view, out Borland.StarTeam.Item item)
+        {
+            if (project == "" || project == null)
+            {
+                item = null;
+                return false;
+            }
+            Project stProject = m_server.Projects.FindByName(project, true);
+            if ( view == "" || view == null)
+            {
+                item = null;
+                return false;
+            }
+            Borland.StarTeam.View targetView = findView(stProject, view);
+            if (targetView == null)
+            {
+                item = null;
+                return false;
+            }
+            item = RunView(m_server, stProject, targetView);
+            if (item != null)
+                return true;
+            return false;
+        }
+
+        private Borland.StarTeam.View findView(Project stProject, String viewName)
+        {
+            for (int i = 0; i < stProject.Views.Count; i++)
+            {
+                if (stProject.Views[i].Name == viewName)
+                    return stProject.Views[i];
+                foreach (Borland.StarTeam.View subView in stProject.Views[i].DerivedViews)
+                {
+                    if (subView.Name == viewName)
+                        return subView;
+                    else
+                    {
+                        Borland.StarTeam.View temp = findSubView(subView, viewName);
+                        if (temp == null)
+                            continue;
+                        if (temp.Name == viewName)
+                            return temp;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private Borland.StarTeam.View findSubView(Borland.StarTeam.View stView, String viewName)
+        {
+            foreach (Borland.StarTeam.View subView in stView.DerivedViews)
+            {
+                if (subView.Name == viewName)
+                    return subView;
+                return findSubView(subView, viewName);
+            }
+            return null;
+        }
+
         // Finds the test project.
         public Project GetProject(Server s, String strName)
         {
             return s.Projects.FindByName(strName, false);
-        }
-
-        // Does all the real work for the sample application.
-        public void Run()
-        {
-            // Create the Server object.
-            if (m_server == null)
-                m_server = new Server(m_strServer, m_nPort);
-            if (m_output.Nodes.Count > 0)
-                m_output.Nodes.Clear();
-
-            // LogOn to the server.
-            m_server.LogOn(m_strUser, m_strPassword);
-
-            // Determine which Item Types to display.
-            m_stItemTypes = ResolveItemTypes(m_server, m_strTypeNames);
-
-            // Search this Server for relevant Items.
-            RunServer(m_server);
-
-            // Disconnect.
-            m_server.Disconnect();
         }
 
         // ----------------------------------------------------------------------------
@@ -398,191 +479,26 @@ namespace RevEdit
         }
 
         // ----------------------------------------------------------------------------
-        // Searches the given Server for relevant Items.
-        // ----------------------------------------------------------------------------
-        public void RunServer(Server stServer)
-        {
-            m_status.Text = "";
-            m_status.Text = "Working...";
-            // Take the opportunity to display key input parameters.
-            Console.Write("\nType Names: ");
-            bool bComma = false;
-            foreach (DictionaryEntry e in m_stItemTypes)
-            {
-                Type stType = (Type)e.Value;
-                if (bComma) Console.Write(", ");
-                Console.Write("\"" + stType.Name + "\"");
-                bComma = true;
-            }
-            Console.WriteLine("");
-
-            if (m_bUseDateFilter)
-            {
-                Console.WriteLine("Last Modified: >= " + m_cutoffDate.ToString());
-            }
-
-            bool bFound = false;
-
-            // For each project on this server ...
-            foreach (Project stProject in stServer.Projects)
-            {
-                // If no project name was specified, search all projects.
-                if (m_strProject == null)
-                {
-                    RunProject(stServer, stProject);
-                }
-
-                    // Otherwise, only search if the name matches.
-                else if (m_strProject == stProject.Name)
-                {
-                    RunProject(stServer, stProject);
-                    bFound = true;
-                    break;
-                }
-            }
-
-            // If a specific project name was specified,
-            // make sure we found it in the collection.
-            if ((m_strProject != null) && !bFound)
-            {
-                string strMessage = "Project \"";
-                strMessage += m_strProject;
-                strMessage += "\" not found.";
-                System.Windows.Forms.MessageBox.Show(strMessage, "Project Not Found", MessageBoxButtons.OK);
-            }
-            m_status.Text = "";
-            m_status.Text = "Idle";
-        }
-
-        // ----------------------------------------------------------------------------
-        // Searches the given project.
-        // ----------------------------------------------------------------------------
-        void RunProject(Server stServer, Project stProject)
-        {
-            // If no view name was specified, search only the default view.
-            if (m_strView == null)
-            {
-                TreeNode projectNode = new TreeNode(stProject.Name);
-                m_output.Nodes.Add(projectNode);
-
-                Borland.StarTeam.ViewCollection projectViews = stProject.DefaultView.DerivedViews;
-                for (int i = 0; i < projectViews.Count; i++)
-                {
-                    TreeNode node = new TreeNode(projectViews[i].Name);
-                    projectNode.Nodes.Add(node);
-                }
-            }
-            else
-            {
-                Borland.StarTeam.ViewCollection projectViews = stProject.DefaultView.DerivedViews;
-                TreeNode projectNode = new TreeNode(stProject.Name);
-                m_output.Nodes.Add(projectNode);
-
-                //// Use "*" to search all views.
-                bool bAllViews = (m_strView == ALL_VIEWS);
-                bool bFound = false;
-
-                // For each view ...
-                foreach (Borland.StarTeam.View stView in projectViews)
-                {
-                    // Are we searching all views?
-                    if (bAllViews)
-                    {
-                        TreeNode node = new TreeNode(stView.Name);
-                        projectNode.Nodes.Add(node);
-                        RunView(stServer, stProject, stView, node);
-                    }
-
-                        // Otherwise, only search if the name matches.
-                    else
-                    {
-                        if (m_strView == stView.Name)
-                        {
-                            TreeNode node = new TreeNode(stView.Name);
-                            projectNode.Nodes.Add(node);
-                            RunView(stServer, stProject, stView, node);
-                            bFound = true;
-                            break;
-                        }
-                    }
-                }
-
-                // If a specific view name was specified,
-                // make sure we found it in the collection.
-                if (!bAllViews && !bFound)
-                {
-                    string strMessage = "View \"";
-                    strMessage += m_strView;
-                    strMessage += "\" not found in Project \"";
-                    strMessage += m_strProject;
-                    strMessage += "\".";
-
-                    System.Windows.Forms.MessageBox.Show(strMessage, "View Not Found", MessageBoxButtons.OK);
-                }
-            }
-            m_status.Text = "";
-            m_status.Text = "Idle";
-        }
-
-        // ----------------------------------------------------------------------------
         // Searches the given view.
         // ----------------------------------------------------------------------------
-        void RunView(Server stServer, Project stProject, Borland.StarTeam.View stView, TreeNode node)
+        private Borland.StarTeam.Item RunView(Server stServer, Project stProject, Borland.StarTeam.View stView)
         {
-            if (stView.DerivedViews.Count > 0)
-            {
-                // For each Item Type ...
-                foreach (Borland.StarTeam.View v in stView.DerivedViews)
-                {
-                    TreeNode newNode = new TreeNode(v.Name);
-                    node.Nodes.Add(newNode);
-                    if (v.DerivedViews.Count > 0)
-                    {
-                        RunView(stServer, stProject, v, newNode);
-                    }
-                    Borland.StarTeam.LabelCollection labels = stView.FetchAllLabelsFromView(stProject.ID, stView.ID);
-                    if (labels.Count > 0)
-                    {
-                        foreach (Borland.StarTeam.Label l in labels)
-                        {
-                            TreeNode labelNode = new TreeNode(l.Name);
-                            newNode.Nodes.Add(labelNode);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Borland.StarTeam.LabelCollection labels = stView.FetchAllLabelsFromView(stProject.ID, stView.ID);
-                if (labels.Count > 0)
-                {
-                    foreach (Borland.StarTeam.Label l in labels)
-                    {
-                        TreeNode labelNode = new TreeNode(l.Name);
-                        node.Nodes.Add(labelNode);
-                    }
-                }
-            }
-        }
-
-        // ----------------------------------------------------------------------------
-        // Searches the given view.
-        // ----------------------------------------------------------------------------
-        void RunView(Server stServer, Project stProject, Borland.StarTeam.View stView)
-        {
+            Borland.StarTeam.Item item = null;
             // For each Item Type ...
             foreach (DictionaryEntry e in m_stItemTypes)
             {
                 Type stType = (Type)e.Value;
-                RunType(stServer, stProject, stView, stType);
+                item = RunType(stServer, stProject, stView, stType);
             }
+            return item;
         }
 
         // ----------------------------------------------------------------------------
         // Searches the given view for all relevant items of the given type.
         // ----------------------------------------------------------------------------
-        void RunType(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType)
+        private Borland.StarTeam.Item RunType(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType)
         {
+            Borland.StarTeam.Item item = null;
             // By default, start searching from the root folder.
             Folder stFolder = stView.RootFolder;
 
@@ -600,7 +516,7 @@ namespace RevEdit
                     strMessage += stProject.Name;
                     strMessage += "\".";
                     System.Windows.Forms.MessageBox.Show(strMessage, "Folder Not Found", MessageBoxButtons.OK);
-                    return;
+                    return null;
                 }
                 stFolder = stTempFolder;
             }
@@ -649,27 +565,26 @@ namespace RevEdit
             stFolder.PopulateNow(stType.Name, names, depth);
 
             // Now, search for items in the selected folder.
-            RunFolder(stServer, stProject, stView, stType, stFolder);
+            item = RunFolder(stServer, stProject, stView, stType, stFolder);
 
             // Free up the memory used by the cached items.
             stFolder.DiscardItems(stType.Name, depth);
+
+            return item;
         }
 
         // ----------------------------------------------------------------------------
         // Searches the given folder.
         // ----------------------------------------------------------------------------
-        void RunFolder(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder)
+        private Borland.StarTeam.Item RunFolder(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder)
         {
-            // In verbose mode, ensure that the folder is displayed.
-            if (m_bVerbose)
-            {
-                RunItem(stServer, stProject, stView, stType, stFolder, null);
-            }
-
+            Borland.StarTeam.Item item = null;
             // For each item of the appropriate type ...
             foreach (Item stItem in stFolder.GetItems(stType.Name))
             {
-                RunItem(stServer, stProject, stView, stType, stFolder, stItem);
+                item = RunItem(stServer, stProject, stView, stType, stFolder, stItem);
+                if (item != null)
+                    return item;
             }
 
             if (m_bRecursive)
@@ -677,31 +592,26 @@ namespace RevEdit
                 // For each subfolder ...
                 foreach (Folder stSubFolder in stFolder.SubFolders)
                 {
-                    RunFolder(stServer, stProject, stView, stType, stSubFolder);
+                    item = RunFolder(stServer, stProject, stView, stType, stSubFolder);
+                    if (item != null && item.ToString() == "revision.txt")
+                        return item;
                 }
             }
+            return item;
         }
 
         // ----------------------------------------------------------------------------
         // Processes the given Item.
         // ----------------------------------------------------------------------------
-        void RunItem(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder, Item stItem)
+        private Borland.StarTeam.Item RunItem(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder, Item stItem)
         {
-            // If we're filtering based on last modified date,
-            // see if this item qualifies.
-            //TreeNode projectNode = new TreeNode(stProject.Name);
-            //m_output.Nodes.Add(projectNode);
-            //if (m_bUseDateFilter && (stItem != null))
-            //{
-            //    if (stItem.ModifiedTime.ToLocalTime() < m_cutoffDate)
-            //        return;
-            //}
-            //Borland.StarTeam.ViewCollection projectViews = stProject.DefaultView.DerivedViews;
-            //for (int i = 0; i < projectViews.Count; i++)
-            //{
-            //    TreeNode node = new TreeNode(projectViews[i].Name);
-            //    projectNode.Nodes.Add(node);
-            //}
+            Borland.StarTeam.Item item = null;
+            File temp = (File)stItem;
+            if (temp.Name == "revision.txt")
+                item = stItem;
+            if (stItem.ToString() == "revision.txt")
+                item = stItem;
+            return item;
         }
 
         // ----------------------------------------------------------------------------

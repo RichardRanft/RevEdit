@@ -6,8 +6,10 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Forms;
 using System.Xml;
+using System.IO;
 
 using Borland.StarTeam;
 using Type = Borland.StarTeam.Type;
@@ -41,32 +43,42 @@ namespace RevEdit
         private void initialize()
         {
             toolStripStatusLabel1.Text = "Initializing...";
+            toolStripStatusLabel2.Text = "";
             updateServerList();
             settingsBox.initializeSettings();
 
             if (settingsBox.AutoLogin)
             {
                 toolStripStatusLabel1.Text = "Logging in to StarTeam...";
-                serviceProvider.User = settingsBox.User;
-                serviceProvider.Password = settingsBox.Password;
-                int serverIndex = getServerByName("PC4 EGM");
-                if (serverIndex >= 0)
-                {
-                    serviceProvider.Server = mAddressList[serverIndex];
-                    serviceProvider.Port = mPortList[serverIndex];
-                }
-                else
-                    return;
-                serviceProvider.logIn();
-                List<String> list = serviceProvider.getProjectList();
-                list.Sort();
-                foreach (String projectName in list)
-                {
-                    cbProjectList.Items.Add(projectName);
-                }
-                cbProjectList.Refresh();
+                login();
                 toolStripStatusLabel1.Text = "Logged in.";
+                toolStripStatusLabel2.Text = "No file loaded.";
             }
+        }
+
+        private bool login()
+        {
+            serviceProvider.User = settingsBox.User;
+            serviceProvider.Password = settingsBox.Password;
+            serviceProvider.TempFilePath = settingsBox.Path;
+            int serverIndex = getServerByName("PC4 EGM");
+            if (serverIndex >= 0)
+            {
+                serviceProvider.Server = mAddressList[serverIndex];
+                serviceProvider.Port = mPortList[serverIndex];
+            }
+            else
+                return false;
+            if (!serviceProvider.logIn())
+                return false;
+            List<String> list = serviceProvider.getProjectList();
+            list.Sort();
+            foreach (String projectName in list)
+            {
+                cbProjectList.Items.Add(projectName);
+            }
+            cbProjectList.Refresh();
+            return true;
         }
 
         private int getServerByName(String name)
@@ -85,7 +97,7 @@ namespace RevEdit
             XmlTextReader reader;
             try
             {
-                reader = new XmlTextReader("Data\\starteam-servers.xml");
+                reader = new XmlTextReader("starteam-servers.xml");
                 while (reader.Read())
                 {
                     switch (reader.NodeType)
@@ -217,30 +229,169 @@ namespace RevEdit
         private void button2_Click(object sender, EventArgs e)
         {
             serviceProvider.disconnect();
+            toolStripStatusLabel1.Text = "Disconnected.";
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             serviceProvider.disconnect();
+            System.IO.FileInfo info = new FileInfo(settingsBox.Path + @"\revision.txt");
+            if (info.Exists)
+                info.Delete();
         }
 
         private void cbProjectList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            cbViewList.Items.Clear();
+            cbViewList.Text = "Select a view...";
+            serviceProvider.Project = cbProjectList.Text;
             List<String> list = serviceProvider.getViewList(cbProjectList.SelectedItem.ToString());
             foreach (String view in list)
             {
                 cbViewList.Items.Add(view);
             }
+            if (cbViewList.Items.Count > 0)
+                cbViewList.Text = cbViewList.Items[0].ToString();
         }
 
         private void cbViewList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            List<String> list = serviceProvider.getLabelList(cbProjectList.SelectedItem.ToString(), cbViewList.SelectedItem.ToString());
+            cbStartLabelList.Items.Clear();
+            cbStartLabelList.Text = "Select the starting label...";
+            cbEndLabelList.Items.Clear();
+            cbEndLabelList.Text = "";
+            String viewName = cbViewList.SelectedItem.ToString().Trim();
+            serviceProvider.View = viewName;
+            List<String> list = serviceProvider.getLabelList(cbProjectList.SelectedItem.ToString(), viewName);
             foreach (String label in list)
             {
                 cbStartLabelList.Items.Add(label);
                 cbEndLabelList.Items.Add(label);
             }
+            if (cbStartLabelList.Items.Count > 0)
+                cbStartLabelList.Text = cbStartLabelList.Items[0].ToString();
+            if (cbEndLabelList.Items.Count > 0)
+                cbEndLabelList.Text = cbEndLabelList.Items[0].ToString();
+        }
+
+        private void cbStartLabelList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void cbEndLabelList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tbNewLabel.Text = suggestNewLabel();
+        }
+
+        private String suggestNewLabel()
+        {
+            String[] labelParts = cbEndLabelList.Text.Split('-');
+            int rev = incrementLabel(labelParts[1]);
+            String newLabel = labelParts[0] + "-";
+            if (rev < 10)
+                newLabel += "0";
+            newLabel += rev.ToString();
+            return newLabel;
+        }
+
+        private int incrementLabel(String verNum)
+        {
+            int version = 0;
+            try
+            {
+                version = System.Convert.ToInt32(verNum);
+            }
+            catch (Exception ex)
+            {
+            }
+            return ++version;
+        }
+
+        private void findRevisionFile()
+        {
+            tbRevisionText.Clear();
+            if (serviceProvider.checkoutRevisionFile())
+            {
+                toolStripStatusLabel2.Text = "Revision.txt found";
+                readFile();
+            }
+            else
+            {
+                toolStripStatusLabel2.Text = "Creating revision.txt";
+            }
+        }
+
+        private void readFile()
+        {
+            try
+            {
+                using (StreamReader sr = new StreamReader(settingsBox.Path + @"\revision.txt"))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        String line = sr.ReadLine();
+                        if (line.Length > 70)
+                        {
+                            string newLine = line;
+                            while (newLine.Length > 70)
+                            {
+                                string temp = newLine.Substring(0, 70) + Environment.NewLine;
+                                newLine = newLine.Substring(70);
+                                tbRevisionText.Text += temp;
+                            }
+                            tbRevisionText.Text += newLine + Environment.NewLine;
+                            continue;
+                        }
+                        tbRevisionText.Text += line + Environment.NewLine;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error Reading File");
+            }
+        }
+
+        private void writeFile()
+        {
+            using (StreamWriter outfile = new StreamWriter(settingsBox.Path + @"\revision.txt", false))
+            {
+                foreach(String line in tbRevisionText.Lines)
+                    outfile.WriteLine(line.ToString());
+            }
+        }
+
+        private void bSearch_Click(object sender, EventArgs e)
+        {
+            toolStripStatusLabel2.Text = "Searching...";
+            findRevisionFile();
+        }
+
+        private void bCheckin_Click(object sender, EventArgs e)
+        {
+            writeFile();
+            if (!serviceProvider.checkinRevisionFile(settingsBox.Path + @"\revision.txt"))
+            {
+                toolStripStatusLabel2.Text = "File not checked in.";
+                return;
+            }
+            if (cbCreateLabel.Checked)
+            {
+                serviceProvider.createLabel(tbNewLabel.Text);
+                toolStripStatusLabel2.Text = "Checked in and label " + tbNewLabel.Text + " created.";
+            }
+            else
+                toolStripStatusLabel2.Text = "Checked in.";
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bLogin_Click(object sender, EventArgs e)
+        {
+            login();
         }
     }
 }
