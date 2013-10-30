@@ -242,6 +242,7 @@ namespace RevEdit
 
         private void cbProjectList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            serviceProvider.clearRevisionFile();
             cbViewList.Items.Clear();
             cbViewList.Text = "Select a view...";
             serviceProvider.Project = cbProjectList.Text;

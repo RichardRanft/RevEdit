@@ -307,6 +307,11 @@ namespace RevEdit
             return false;
         }
 
+        public void clearRevisionFile()
+        {
+            m_revisionFile = null;
+        }
+
         public bool checkinRevisionFile(String revPath)
         {
             Project proj = m_server.Projects.FindByName(m_strProject, true);
