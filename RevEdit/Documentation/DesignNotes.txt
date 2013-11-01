@@ -19,3 +19,14 @@ a tree view given the hierarchical nature of the data.
 Selecting the view should then populate the two label combo boxes.  Selecting 
 a starting label should cause the ending label combo box to select the next 
 label in the set such that the end is never earlier than the start.
+
+Nevada Modification Document Generation:
+Track first submission date.
+
+Only provide the initial game description with first release regardless of
+subsequent revisions.  Later submissions will contain only changes made 
+since the last submission date.
+
+Tracking of submission dates - 
+Keep xml file with revision.txt?
+Embed in the label description?
