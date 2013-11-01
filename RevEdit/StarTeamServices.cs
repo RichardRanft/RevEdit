@@ -185,7 +185,14 @@ namespace RevEdit
                 return false;
 
             // LogOn to the server.
-            m_server.LogOn(m_strUser, m_strPassword);
+            try
+            {
+                m_server.LogOn(m_strUser, m_strPassword);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Login Problem");
+            }
 
             // Determine which Item Types to display.
             m_stItemTypes = ResolveItemTypes(m_server, m_strTypeNames);
@@ -333,11 +340,11 @@ namespace RevEdit
             return true;
         }
 
-        public bool createLabel(String label)
+        public bool createLabel(String label, String comment)
         {
             Project proj = m_server.Projects.FindByName(m_strProject, true);
             Borland.StarTeam.View view = proj.Views.FindByName(m_strView, true);
-            Borland.StarTeam.Label newLabel = view.CreateRevisionLabel(label, "", false);
+            Borland.StarTeam.Label newLabel = view.CreateRevisionLabel(label, comment, false);
 
             if (newLabel != null)
                 return true;
