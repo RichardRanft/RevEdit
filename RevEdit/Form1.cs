@@ -21,6 +21,7 @@ namespace RevEdit
         private String currentLine;
         private About aboutBox;
         private Settings settingsBox;
+        private CheckinForm checkinForm;
         private StarTeamServices serviceProvider;
         private List<String> mServerList;
         private List<String> mAddressList;
@@ -32,6 +33,7 @@ namespace RevEdit
 
             aboutBox = new About();
             settingsBox = new Settings();
+            checkinForm = new CheckinForm();
             serviceProvider = new StarTeamServices();
             mServerList = new List<String>();
             mAddressList = new List<String>();
@@ -78,6 +80,15 @@ namespace RevEdit
                 cbProjectList.Items.Add(projectName);
             }
             cbProjectList.Refresh();
+            cbProjectList.Enabled = true;
+            cbViewList.Enabled = true;
+            cbStartLabelList.Enabled = true;
+            cbEndLabelList.Enabled = true;
+            bSearch.Enabled = true;
+            bCheckin.Enabled = true;
+            bDisconnect.Enabled = true;
+            bLogin.Enabled = false;
+            toolStripStatusLabel1.Text = "Logged in.";
             return true;
         }
 
@@ -136,6 +147,7 @@ namespace RevEdit
             {
                 System.Windows.Forms.MessageBox.Show(ex.Message, "XML Read Error", MessageBoxButtons.OK);
             }
+            toolStripStatusLabel1.Text = "Ready.";
         }
 
         public IEnumerable<string> wrapText(string line, int length)
@@ -184,11 +196,13 @@ namespace RevEdit
             if (lineIndex < tbRevisionText.Lines.Length)
             {
                 currentLine = tbRevisionText.Lines[lineIndex].ToString();
-                lColumn.Text = lColumn.Text = currentLine.Length.ToString();
+                lColumn.Text = currentLine.Length.ToString();
             }
 
             if (filterControlKeys(e.KeyCode))
+            {
                 return;
+            }
 
             if (lineIndex < tbRevisionText.Lines.Length)
             {
@@ -228,6 +242,15 @@ namespace RevEdit
 
         private void button2_Click(object sender, EventArgs e)
         {
+            cbProjectList.Enabled = false;
+            cbViewList.Enabled = false;
+            cbStartLabelList.Enabled = false;
+            cbEndLabelList.Enabled = false;
+            bSearch.Enabled = false;
+            bCheckin.Enabled = false;
+            bDisconnect.Enabled = false;
+            bLogin.Enabled = true;
+
             serviceProvider.disconnect();
             toolStripStatusLabel1.Text = "Disconnected.";
         }
@@ -331,18 +354,6 @@ namespace RevEdit
                     while (!sr.EndOfStream)
                     {
                         String line = sr.ReadLine();
-                        if (line.Length > 70)
-                        {
-                            string newLine = line;
-                            while (newLine.Length > 70)
-                            {
-                                string temp = newLine.Substring(0, 70) + Environment.NewLine;
-                                newLine = newLine.Substring(70);
-                                tbRevisionText.Text += temp;
-                            }
-                            tbRevisionText.Text += newLine + Environment.NewLine;
-                            continue;
-                        }
                         tbRevisionText.Text += line + Environment.NewLine;
                     }
                 }
@@ -351,6 +362,7 @@ namespace RevEdit
             {
                 MessageBox.Show(ex.Message, "Error Reading File");
             }
+            wrapText();
         }
 
         private void writeFile()
@@ -366,10 +378,12 @@ namespace RevEdit
         {
             toolStripStatusLabel2.Text = "Searching...";
             findRevisionFile();
+            tbRevisionText.Focus();
         }
 
         private void bCheckin_Click(object sender, EventArgs e)
         {
+            wrapText();
             writeFile();
             if (!serviceProvider.checkinRevisionFile(settingsBox.Path + @"\revision.txt"))
             {
@@ -378,8 +392,16 @@ namespace RevEdit
             }
             if (cbCreateLabel.Checked)
             {
-                serviceProvider.createLabel(tbNewLabel.Text);
-                toolStripStatusLabel2.Text = "Checked in and label " + tbNewLabel.Text + " created.";
+                if (checkinForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    serviceProvider.createLabel(tbNewLabel.Text, checkinForm.Comment);
+                    toolStripStatusLabel2.Text = "Checked in and label " + tbNewLabel.Text + " created.";
+                }
+                else
+                {
+                    toolStripStatusLabel2.Text = "File not checked in.";
+                    return;
+                }
             }
             else
                 toolStripStatusLabel2.Text = "Checked in.";
@@ -387,12 +409,76 @@ namespace RevEdit
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-
         }
 
         private void bLogin_Click(object sender, EventArgs e)
         {
             login();
+        }
+
+        private void wrapText()
+        {
+            tbRevisionText.TextChanged -= tbRevisionText_TextChanged;
+            String[] temp = tbRevisionText.Lines;
+            tbRevisionText.Text = "";
+            for (int lineIndex = 0; lineIndex < temp.Length; lineIndex++)
+            {
+                String line = temp[lineIndex];
+                if (line.Length > 70)
+                {
+                    String[] lineParts = line.Split(' ');
+                    int currentPart = 0;
+                    int lineStart = 0;
+                    string tempLine = "";
+                    while (currentPart < lineParts.Length)
+                    {
+                        tempLine += (lineParts[currentPart++] + " ");
+                        if (tempLine.Length >= 69)
+                        {
+                            tempLine = "";
+                            currentPart--;
+                            for (int i = lineStart; i < currentPart; i++)
+                            {
+                                tempLine += (lineParts[i] + " ");
+                            }
+                            lineStart = currentPart;
+                            tempLine += Environment.NewLine;
+                            tbRevisionText.Text += tempLine;
+                            tempLine = "";
+                        }
+                    }
+                    tbRevisionText.Text += tempLine + Environment.NewLine;
+                    continue;
+                }
+                else
+                    tbRevisionText.Text += line + Environment.NewLine;
+            }
+            tbRevisionText.TextChanged += tbRevisionText_TextChanged;
+            int start = tbRevisionText.TextLength - 1 >= 0 ? tbRevisionText.TextLength - 1 : 0;
+            tbRevisionText.Select(start, 0);
+        }
+
+        private void tbRevisionText_TextChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void Form1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+        }
+
+        private void lColumn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lCharCount_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bWrapText_Click(object sender, EventArgs e)
+        {
+            wrapText();
         }
     }
 }
