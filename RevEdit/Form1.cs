@@ -26,6 +26,7 @@ namespace RevEdit
         private List<String> mServerList;
         private List<String> mAddressList;
         private List<int> mPortList;
+        private ModDocForm mModDocForm;
 
         public Form1()
         {
@@ -34,6 +35,7 @@ namespace RevEdit
             aboutBox = new About();
             settingsBox = new Settings();
             checkinForm = new CheckinForm();
+            mModDocForm = new ModDocForm();
             serviceProvider = new StarTeamServices();
             mServerList = new List<String>();
             mAddressList = new List<String>();
@@ -394,7 +396,7 @@ namespace RevEdit
             {
                 if (checkinForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    serviceProvider.createLabel(tbNewLabel.Text, checkinForm.Comment);
+                    //serviceProvider.createLabel(tbNewLabel.Text, checkinForm.Comment);
                     toolStripStatusLabel2.Text = "Checked in and label " + tbNewLabel.Text + " created.";
                 }
                 else
@@ -432,6 +434,11 @@ namespace RevEdit
                     string tempLine = "";
                     while (currentPart < lineParts.Length)
                     {
+                        if (lineParts[currentPart].Length > 69)
+                        {
+                            tempLine = lineParts[currentPart++].Substring(0, 69);
+                            continue;
+                        }
                         tempLine += (lineParts[currentPart++] + " ");
                         if (tempLine.Length >= 69)
                         {
@@ -479,6 +486,11 @@ namespace RevEdit
         private void bWrapText_Click(object sender, EventArgs e)
         {
             wrapText();
+        }
+
+        private void createToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            mModDocForm.ShowDialog();
         }
     }
 }

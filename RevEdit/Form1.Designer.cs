@@ -61,6 +61,8 @@
             this.tbNewLabel = new System.Windows.Forms.TextBox();
             this.cbCreateLabel = new System.Windows.Forms.CheckBox();
             this.bWrapText = new System.Windows.Forms.Button();
+            this.modDocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -104,6 +106,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.modDocToolStripMenuItem,
             this.preferencesToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -123,7 +126,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -371,6 +374,21 @@
             this.bWrapText.UseVisualStyleBackColor = true;
             this.bWrapText.Click += new System.EventHandler(this.bWrapText_Click);
             // 
+            // modDocToolStripMenuItem
+            // 
+            this.modDocToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createToolStripMenuItem});
+            this.modDocToolStripMenuItem.Name = "modDocToolStripMenuItem";
+            this.modDocToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
+            this.modDocToolStripMenuItem.Text = "Mod Doc";
+            // 
+            // createToolStripMenuItem
+            // 
+            this.createToolStripMenuItem.Name = "createToolStripMenuItem";
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.createToolStripMenuItem.Text = "Create";
+            this.createToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -451,6 +469,8 @@
         private System.Windows.Forms.TextBox tbNewLabel;
         private System.Windows.Forms.CheckBox cbCreateLabel;
         private System.Windows.Forms.Button bWrapText;
+        private System.Windows.Forms.ToolStripMenuItem modDocToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createToolStripMenuItem;
     }
 }
 
