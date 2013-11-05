@@ -16,19 +16,28 @@ using Type = Borland.StarTeam.Type;
 
 namespace RevEdit
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private String currentLine;
         private About aboutBox;
         private Settings settingsBox;
         private CheckinForm checkinForm;
         private StarTeamServices serviceProvider;
+        private int mRevision;
         private List<String> mServerList;
         private List<String> mAddressList;
         private List<int> mPortList;
         private ModDocForm mModDocForm;
 
-        public Form1()
+        public String[] RevisionText
+        {
+            get
+            {
+                return tbRevisionText.Lines;
+            }
+        }
+
+        public MainForm()
         {
             InitializeComponent();
 
@@ -242,7 +251,7 @@ namespace RevEdit
             Application.Exit();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void bDisconnect_Click(object sender, EventArgs e)
         {
             cbProjectList.Enabled = false;
             cbViewList.Enabled = false;
@@ -254,6 +263,11 @@ namespace RevEdit
             bLogin.Enabled = true;
 
             serviceProvider.disconnect();
+
+            System.IO.FileInfo info = new FileInfo(settingsBox.Path + @"\revision.txt");
+            if (info.Exists)
+                info.Delete();
+
             toolStripStatusLabel1.Text = "Disconnected.";
         }
 
@@ -317,6 +331,8 @@ namespace RevEdit
             if (rev < 10)
                 newLabel += "0";
             newLabel += rev.ToString();
+            nudRevision.Value = rev;
+            mRevision = rev;
             return newLabel;
         }
 
@@ -409,7 +425,7 @@ namespace RevEdit
                 toolStripStatusLabel2.Text = "Checked in.";
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void cbCreateLabel_CheckedChanged(object sender, EventArgs e)
         {
         }
 
@@ -490,7 +506,53 @@ namespace RevEdit
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            mModDocForm.RevisionLines = tbRevisionText.Lines;
             mModDocForm.ShowDialog();
+        }
+
+        private String getHeaderBlock()
+        {
+            String header = "";
+
+            header += "//Previous version: " + tbPrevVersion.Text + Environment.NewLine;
+            header += "//Current version: " + tbCurrVersion.Text + Environment.NewLine;
+            header += "//Author: " + settingsBox.Author + Environment.NewLine;
+            header += "//Date: " + DateTime.Today.ToShortDateString() + Environment.NewLine + Environment.NewLine;
+            header += "//Revision: " + (mRevision < 10 ? "0" + mRevision.ToString() : mRevision.ToString()) + Environment.NewLine + Environment.NewLine;
+
+            return header;
+        }
+
+        private void nudRevision_ValueChanged(object sender, EventArgs e)
+        {
+            String[] labelParts = cbEndLabelList.Text.Split('-');
+            int revMin = 0;
+            try
+            {
+                revMin = System.Convert.ToInt32(labelParts[1]);
+            }
+            catch (Exception ex)
+            {
+            }
+            int rev = (int)nudRevision.Value;
+            String newLabel = labelParts[0] + "-";
+            if (rev >= revMin)
+            {
+                if (rev < 10)
+                    newLabel += "0";
+                newLabel += rev.ToString();
+                tbNewLabel.Text = newLabel;
+            }
+            else
+                nudRevision.Value = revMin;
+
+            mRevision = (int)nudRevision.Value;
+        }
+
+        private void bInsertHeader_Click(object sender, EventArgs e)
+        {
+            String header = getHeaderBlock();
+            tbRevisionText.Text = tbRevisionText.Text.Insert(0, header);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace RevEdit
 {
@@ -14,6 +15,18 @@ namespace RevEdit
         private String mPath;
         private String mHMAC;
         private String mSHA1;
+        private String[] mRevisionLines;
+        private StreamReader mInfile;
+        private List<String> mSigFileData;
+        private List<String> mRevisionData;
+
+        public String[] RevisionLines
+        {
+            set
+            {
+                mRevisionLines = value;
+            }
+        }
 
         public ModDocForm()
         {
@@ -21,6 +34,8 @@ namespace RevEdit
             mPath = "";
             mHMAC = "";
             mSHA1 = "";
+            mSigFileData = new List<string>();
+            mRevisionData = new List<string>();
         }
 
         private void bBrowse_Click(object sender, EventArgs e)
@@ -29,6 +44,7 @@ namespace RevEdit
             {
                 mPath = fbdBrowser.SelectedPath;
                 lSelectedFolder.Text = mPath;
+                getSignatures();
             }
         }
 
@@ -49,9 +65,109 @@ namespace RevEdit
             tbModDocPreview.AppendText("CHANGE OVERVIEW: " + Environment.NewLine + Environment.NewLine);
         }
 
+        private void getSignatures()
+        {
+            String[] pathParts = mPath.Split('\\');
+            String[] folderParts = pathParts[pathParts.Length - 1].Split();
+            tbCurrentVersion.Text = folderParts[folderParts.Length - 2];
+            String gameSigFile = mPath + "\\" + tbCurrentVersion.Text + ".txt";
+            mSigFileData.Clear();
+            try
+            {
+                this.mInfile = new System.IO.StreamReader(gameSigFile);
+            }
+            catch (Exception fileEx)
+            {
+                System.Windows.Forms.MessageBox.Show(fileEx.Message.ToString() + " :\n" + gameSigFile, "File error");
+            }
+            int zero = 0;
+            while (this.mInfile.Peek() > zero)
+            {
+                mSigFileData.Add(mInfile.ReadLine());
+            }
+            if (mSigFileData.Count > 2)
+            {
+                if (mSigFileData[2].Length > 0)
+                    mSHA1 = mSigFileData[2].Split(':').GetValue(1).ToString().Trim();
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("The version data file did not contain a valid SHA1 hash value.", "File read error");
+                    return;
+                }
+                if (mSigFileData[3].Length > 0)
+                    mHMAC = mSigFileData[3].Split(':').GetValue(1).ToString().Trim();
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("The version data file did not contain a valid HMAC-SHA1 hash value.", "File read error");
+                    return;
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("The version data file did not contain valid data.", "File read error");
+                return;
+            }
+            mInfile.Close();
+        }
+
+        private void addRevisions()
+        {
+            String revFileName = mPath + "\\revision.txt";
+            mRevisionData.Clear();
+            bool filePresent = true;
+            try
+            {
+                this.mInfile = new System.IO.StreamReader(revFileName);
+            }
+            catch (Exception fileEx)
+            {
+                filePresent = false;
+                System.Windows.Forms.MessageBox.Show(fileEx.Message.ToString() + " :\n" + revFileName, "File error");
+            }
+            String line = "";
+            while(filePresent && (line = mInfile.ReadLine()) != null)
+            {
+                mRevisionData.Add(line);
+            }
+            mInfile.Close();
+            if (mRevisionData.Count < 1)
+            {
+                foreach(String l in mRevisionLines)
+                {
+                    mRevisionData.Add(l);
+                }
+            }
+            for (int i = 0; i < mRevisionData.Count; i++)
+            {
+                if ( mRevisionData[i] != null && (mRevisionData[i].StartsWith("//") || mRevisionData[i].StartsWith("Previous Version:", true, null)) )
+                {
+                    // this is a header block.  Lets see if we need to keep reading
+                    if (!blockIsRelevant(mRevisionData[i], tbPrevVersion.Text))
+                        break;
+                    i += 6;
+                }
+                if ( i < mRevisionData.Count )
+                    tbModDocPreview.AppendText(mRevisionData[i] + Environment.NewLine);
+            }
+        }
+
+        private bool blockIsRelevant(String text, String targetVersion)
+        {
+            if (targetVersion == "None" || targetVersion == "N/A")
+                return true;
+
+            bool relevant = false;
+            String[] textParts = text.Split(':');
+            String ver = textParts[1].Trim();
+            if (String.CompareOrdinal(ver, targetVersion) >= 0)
+                relevant = true;
+            return relevant;
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             updateDoc();
+            addRevisions();
         }
     }
 }

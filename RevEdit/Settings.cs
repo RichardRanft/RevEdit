@@ -15,12 +15,20 @@ namespace RevEdit
         private String m_strUser;
         private String m_strPassword;
         private String m_strTempPath;
+        private String m_strAuthor;
         private bool m_boolAutoLogin;
         private RegistryKey m_keyCurrentUser;
         private RegistryKey m_keySettings;
 
         # region Accessors
 
+        public String Author
+        {
+            get
+            {
+                return m_strAuthor;
+            }
+        }
         public String User
         {
             get
@@ -94,6 +102,11 @@ namespace RevEdit
             {
                 System.Windows.Forms.MessageBox.Show("Error code:\n" + rException.Message.ToString(), "Error Accessing Registry", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
+            if (m_keySettings.GetValue("Author") != null)
+            {
+                tbAuthor.Text = m_keySettings.GetValue("Author").ToString();
+                m_strAuthor = tbAuthor.Text;
+            }
             if (m_keySettings.GetValue("TempFolder") != null)
             {
                 tbTempPath.Text = m_keySettings.GetValue("TempFolder").ToString();
@@ -118,6 +131,8 @@ namespace RevEdit
 
         private void bOK_Click(object sender, EventArgs e)
         {
+            m_keySettings.SetValue("Author", tbAuthor.Text);
+            m_strAuthor = tbAuthor.Text;
             m_keySettings.SetValue("TempFolder", tbTempPath.Text);
             m_strTempPath = tbTempPath.Text;
             m_keySettings.SetValue("UserName", tbUserName.Text);

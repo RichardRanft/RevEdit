@@ -1,6 +1,6 @@
 ﻿namespace RevEdit
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -34,6 +34,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modDocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,7 +52,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.tbPrevVersion = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.cbCurrVersion = new System.Windows.Forms.TextBox();
+            this.tbCurrVersion = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.bLogin = new System.Windows.Forms.Button();
             this.bDisconnect = new System.Windows.Forms.Button();
@@ -61,10 +63,12 @@
             this.tbNewLabel = new System.Windows.Forms.TextBox();
             this.cbCreateLabel = new System.Windows.Forms.CheckBox();
             this.bWrapText = new System.Windows.Forms.Button();
-            this.modDocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label8 = new System.Windows.Forms.Label();
+            this.nudRevision = new System.Windows.Forms.NumericUpDown();
+            this.bInsertHeader = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRevision)).BeginInit();
             this.SuspendLayout();
             // 
             // tbRevisionText
@@ -126,9 +130,24 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // modDocToolStripMenuItem
+            // 
+            this.modDocToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createToolStripMenuItem});
+            this.modDocToolStripMenuItem.Name = "modDocToolStripMenuItem";
+            this.modDocToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
+            this.modDocToolStripMenuItem.Text = "Mod Doc";
+            // 
+            // createToolStripMenuItem
+            // 
+            this.createToolStripMenuItem.Name = "createToolStripMenuItem";
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.createToolStripMenuItem.Text = "Create";
+            this.createToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
             // 
             // preferencesToolStripMenuItem
             // 
@@ -267,12 +286,12 @@
             this.label5.TabIndex = 13;
             this.label5.Text = "Previous Version";
             // 
-            // cbCurrVersion
+            // tbCurrVersion
             // 
-            this.cbCurrVersion.Location = new System.Drawing.Point(297, 167);
-            this.cbCurrVersion.Name = "cbCurrVersion";
-            this.cbCurrVersion.Size = new System.Drawing.Size(278, 20);
-            this.cbCurrVersion.TabIndex = 16;
+            this.tbCurrVersion.Location = new System.Drawing.Point(297, 167);
+            this.tbCurrVersion.Name = "tbCurrVersion";
+            this.tbCurrVersion.Size = new System.Drawing.Size(278, 20);
+            this.tbCurrVersion.TabIndex = 16;
             // 
             // label6
             // 
@@ -302,7 +321,7 @@
             this.bDisconnect.TabIndex = 18;
             this.bDisconnect.Text = "Disconnect";
             this.bDisconnect.UseVisualStyleBackColor = true;
-            this.bDisconnect.Click += new System.EventHandler(this.button2_Click);
+            this.bDisconnect.Click += new System.EventHandler(this.bDisconnect_Click);
             // 
             // cbProjectList
             // 
@@ -340,7 +359,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(176, 200);
+            this.label7.Location = new System.Drawing.Point(175, 191);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(61, 13);
             this.label7.TabIndex = 22;
@@ -348,7 +367,7 @@
             // 
             // tbNewLabel
             // 
-            this.tbNewLabel.Location = new System.Drawing.Point(241, 197);
+            this.tbNewLabel.Location = new System.Drawing.Point(178, 207);
             this.tbNewLabel.Name = "tbNewLabel";
             this.tbNewLabel.Size = new System.Drawing.Size(142, 20);
             this.tbNewLabel.TabIndex = 23;
@@ -356,13 +375,13 @@
             // cbCreateLabel
             // 
             this.cbCreateLabel.AutoSize = true;
-            this.cbCreateLabel.Location = new System.Drawing.Point(390, 199);
+            this.cbCreateLabel.Location = new System.Drawing.Point(386, 208);
             this.cbCreateLabel.Name = "cbCreateLabel";
             this.cbCreateLabel.Size = new System.Drawing.Size(107, 17);
             this.cbCreateLabel.TabIndex = 24;
             this.cbCreateLabel.Text = "Create this label?";
             this.cbCreateLabel.UseVisualStyleBackColor = true;
-            this.cbCreateLabel.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.cbCreateLabel.CheckedChanged += new System.EventHandler(this.cbCreateLabel_CheckedChanged);
             // 
             // bWrapText
             // 
@@ -374,26 +393,41 @@
             this.bWrapText.UseVisualStyleBackColor = true;
             this.bWrapText.Click += new System.EventHandler(this.bWrapText_Click);
             // 
-            // modDocToolStripMenuItem
+            // label8
             // 
-            this.modDocToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createToolStripMenuItem});
-            this.modDocToolStripMenuItem.Name = "modDocToolStripMenuItem";
-            this.modDocToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
-            this.modDocToolStripMenuItem.Text = "Mod Doc";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(324, 190);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(48, 13);
+            this.label8.TabIndex = 27;
+            this.label8.Text = "Revision";
             // 
-            // createToolStripMenuItem
+            // nudRevision
             // 
-            this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.createToolStripMenuItem.Text = "Create";
-            this.createToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
+            this.nudRevision.Location = new System.Drawing.Point(324, 207);
+            this.nudRevision.Name = "nudRevision";
+            this.nudRevision.Size = new System.Drawing.Size(56, 20);
+            this.nudRevision.TabIndex = 28;
+            this.nudRevision.ValueChanged += new System.EventHandler(this.nudRevision_ValueChanged);
             // 
-            // Form1
+            // bInsertHeader
+            // 
+            this.bInsertHeader.Location = new System.Drawing.Point(94, 224);
+            this.bInsertHeader.Name = "bInsertHeader";
+            this.bInsertHeader.Size = new System.Drawing.Size(75, 23);
+            this.bInsertHeader.TabIndex = 29;
+            this.bInsertHeader.Text = "Header";
+            this.bInsertHeader.UseVisualStyleBackColor = true;
+            this.bInsertHeader.Click += new System.EventHandler(this.bInsertHeader_Click);
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 690);
+            this.Controls.Add(this.bInsertHeader);
+            this.Controls.Add(this.nudRevision);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.bWrapText);
             this.Controls.Add(this.cbCreateLabel);
             this.Controls.Add(this.tbNewLabel);
@@ -403,7 +437,7 @@
             this.Controls.Add(this.cbProjectList);
             this.Controls.Add(this.bDisconnect);
             this.Controls.Add(this.bLogin);
-            this.Controls.Add(this.cbCurrVersion);
+            this.Controls.Add(this.tbCurrVersion);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.tbPrevVersion);
             this.Controls.Add(this.label5);
@@ -421,7 +455,7 @@
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Revision Text Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.Form1_PreviewKeyDown);
@@ -429,6 +463,7 @@
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRevision)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -456,7 +491,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tbPrevVersion;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox cbCurrVersion;
+        private System.Windows.Forms.TextBox tbCurrVersion;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button bLogin;
         private System.Windows.Forms.Button bDisconnect;
@@ -471,6 +506,9 @@
         private System.Windows.Forms.Button bWrapText;
         private System.Windows.Forms.ToolStripMenuItem modDocToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createToolStripMenuItem;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.NumericUpDown nudRevision;
+        private System.Windows.Forms.Button bInsertHeader;
     }
 }
 

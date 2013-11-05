@@ -73,7 +73,7 @@
             this.tbModDocPreview.Name = "tbModDocPreview";
             this.tbModDocPreview.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tbModDocPreview.Size = new System.Drawing.Size(626, 499);
-            this.tbModDocPreview.TabIndex = 2;
+            this.tbModDocPreview.TabIndex = 7;
             // 
             // bClose
             // 
@@ -81,7 +81,7 @@
             this.bClose.Location = new System.Drawing.Point(567, 643);
             this.bClose.Name = "bClose";
             this.bClose.Size = new System.Drawing.Size(71, 23);
-            this.bClose.TabIndex = 3;
+            this.bClose.TabIndex = 9;
             this.bClose.Text = "Close";
             this.bClose.UseVisualStyleBackColor = true;
             // 
@@ -91,7 +91,7 @@
             this.bSave.Location = new System.Drawing.Point(481, 643);
             this.bSave.Name = "bSave";
             this.bSave.Size = new System.Drawing.Size(71, 23);
-            this.bSave.TabIndex = 4;
+            this.bSave.TabIndex = 8;
             this.bSave.Text = "Save";
             this.bSave.UseVisualStyleBackColor = true;
             // 
@@ -100,7 +100,7 @@
             this.tbCurrentVersion.Location = new System.Drawing.Point(12, 70);
             this.tbCurrentVersion.Name = "tbCurrentVersion";
             this.tbCurrentVersion.Size = new System.Drawing.Size(282, 20);
-            this.tbCurrentVersion.TabIndex = 6;
+            this.tbCurrentVersion.TabIndex = 2;
             // 
             // label2
             // 
@@ -116,7 +116,7 @@
             this.tbPrevVersion.Location = new System.Drawing.Point(309, 30);
             this.tbPrevVersion.Name = "tbPrevVersion";
             this.tbPrevVersion.Size = new System.Drawing.Size(282, 20);
-            this.tbPrevVersion.TabIndex = 8;
+            this.tbPrevVersion.TabIndex = 3;
             this.tbPrevVersion.Text = "N/A";
             // 
             // label3
@@ -133,7 +133,7 @@
             this.tbCurrentPlatform.Location = new System.Drawing.Point(309, 70);
             this.tbCurrentPlatform.Name = "tbCurrentPlatform";
             this.tbCurrentPlatform.Size = new System.Drawing.Size(282, 20);
-            this.tbCurrentPlatform.TabIndex = 10;
+            this.tbCurrentPlatform.TabIndex = 4;
             this.tbCurrentPlatform.Text = "W4NAS07L";
             // 
             // label4
@@ -168,7 +168,7 @@
             this.bBrowse.Location = new System.Drawing.Point(12, 109);
             this.bBrowse.Name = "bBrowse";
             this.bBrowse.Size = new System.Drawing.Size(116, 23);
-            this.bBrowse.TabIndex = 13;
+            this.bBrowse.TabIndex = 5;
             this.bBrowse.Text = "Select Game Folder";
             this.bBrowse.UseVisualStyleBackColor = true;
             this.bBrowse.Click += new System.EventHandler(this.bBrowse_Click);
@@ -178,7 +178,7 @@
             this.button1.Location = new System.Drawing.Point(134, 109);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 14;
+            this.button1.TabIndex = 6;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);

@@ -37,12 +37,16 @@
             this.bCancel = new System.Windows.Forms.Button();
             this.bOK = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.bTempBrowse = new System.Windows.Forms.Button();
             this.tbTempPath = new System.Windows.Forms.TextBox();
+            this.bTempBrowse = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.folderBrowseDlg = new System.Windows.Forms.FolderBrowserDialog();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tbAuthor = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbAutoLogin
@@ -134,14 +138,12 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Files";
             // 
-            // label3
+            // tbTempPath
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 19);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(120, 13);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "Temporary File Location";
+            this.tbTempPath.Location = new System.Drawing.Point(7, 36);
+            this.tbTempPath.Name = "tbTempPath";
+            this.tbTempPath.Size = new System.Drawing.Size(219, 20);
+            this.tbTempPath.TabIndex = 2;
             // 
             // bTempBrowse
             // 
@@ -153,18 +155,48 @@
             this.bTempBrowse.UseVisualStyleBackColor = true;
             this.bTempBrowse.Click += new System.EventHandler(this.bTempBrowse_Click);
             // 
-            // tbTempPath
+            // label3
             // 
-            this.tbTempPath.Location = new System.Drawing.Point(7, 36);
-            this.tbTempPath.Name = "tbTempPath";
-            this.tbTempPath.Size = new System.Drawing.Size(219, 20);
-            this.tbTempPath.TabIndex = 2;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 19);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(120, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Temporary File Location";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.tbAuthor);
+            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Location = new System.Drawing.Point(13, 146);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(224, 100);
+            this.groupBox3.TabIndex = 9;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Author";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 20);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Name";
+            // 
+            // tbAuthor
+            // 
+            this.tbAuthor.Location = new System.Drawing.Point(7, 37);
+            this.tbAuthor.Name = "tbAuthor";
+            this.tbAuthor.Size = new System.Drawing.Size(211, 20);
+            this.tbAuthor.TabIndex = 1;
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(488, 289);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.bOK);
             this.Controls.Add(this.bCancel);
@@ -175,6 +207,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -194,5 +228,8 @@
         private System.Windows.Forms.Button bTempBrowse;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.FolderBrowserDialog folderBrowseDlg;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox tbAuthor;
+        private System.Windows.Forms.Label label4;
     }
 }
