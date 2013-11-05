@@ -161,18 +161,6 @@ namespace RevEdit
             toolStripStatusLabel1.Text = "Ready.";
         }
 
-        public IEnumerable<string> wrapText(string line, int length)
-        {
-            var s = line;
-            while (s.Length > length)
-            {
-                var result = s.Substring(0, length);
-                s = s.Substring(length);
-                yield return result;
-            }
-            yield return s;
-        }
-
         private bool filterControlKeys(Keys k)
         {
             if (k == Keys.Up)
@@ -321,6 +309,7 @@ namespace RevEdit
         private void cbEndLabelList_SelectedIndexChanged(object sender, EventArgs e)
         {
             tbNewLabel.Text = suggestNewLabel();
+            tbCurrVersion.Text = cbEndLabelList.Text.Split('-')[0];
         }
 
         private String suggestNewLabel()
@@ -434,6 +423,37 @@ namespace RevEdit
             login();
         }
 
+        public IEnumerable<string> wrapText(string line, int length)
+        {
+            // wraps text as we type.  current method breaks at letter, needs to
+            // break at word
+            var s = line;
+            // break line into words
+            String[] lineParts = s.Split(' ');
+            // add lengths of words until (total > length)
+            int total = 0;
+            int currentPart = 0;
+            int lastPart = 0;
+            while (total <= length)
+            {
+                total += (lineParts[lastPart++].Length + 1);
+            }
+            String result = "";
+            while (currentPart < lastPart)
+            {
+                result += lineParts[currentPart++];
+            }
+            yield return result;
+
+            while (s.Length > length)
+            {
+                result = s.Substring(0, length);
+                s = s.Substring(length);
+                yield return result;
+            }
+            yield return s;
+        }
+
         private void wrapText()
         {
             tbRevisionText.TextChanged -= tbRevisionText_TextChanged;
@@ -507,6 +527,9 @@ namespace RevEdit
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
         {
             mModDocForm.RevisionLines = tbRevisionText.Lines;
+            mModDocForm.CurrentVersion = tbCurrVersion.Text;
+            if (tbPrevVersion.Text != "")
+                mModDocForm.PreviousVersion = tbPrevVersion.Text;
             mModDocForm.ShowDialog();
         }
 

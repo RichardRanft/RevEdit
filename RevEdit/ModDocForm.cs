@@ -15,6 +15,8 @@ namespace RevEdit
         private String mPath;
         private String mHMAC;
         private String mSHA1;
+        private String mCurrentVersion;
+        private String mPrevVersion;
         private String[] mRevisionLines;
         private StreamReader mInfile;
         private List<String> mSigFileData;
@@ -27,6 +29,20 @@ namespace RevEdit
                 mRevisionLines = value;
             }
         }
+        public String CurrentVersion
+        {
+            set
+            {
+                mCurrentVersion = value;
+            }
+        }
+        public String PreviousVersion
+        {
+            set
+            {
+                mPrevVersion = value;
+            }
+        }
 
         public ModDocForm()
         {
@@ -34,6 +50,8 @@ namespace RevEdit
             mPath = "";
             mHMAC = "";
             mSHA1 = "";
+            mCurrentVersion = "";
+            mPrevVersion = "N/A";
             mSigFileData = new List<string>();
             mRevisionData = new List<string>();
         }
@@ -112,24 +130,9 @@ namespace RevEdit
 
         private void addRevisions()
         {
-            String revFileName = mPath + "\\revision.txt";
+            // load mod doc data from revision.txt contents
             mRevisionData.Clear();
-            bool filePresent = true;
-            try
-            {
-                this.mInfile = new System.IO.StreamReader(revFileName);
-            }
-            catch (Exception fileEx)
-            {
-                filePresent = false;
-                System.Windows.Forms.MessageBox.Show(fileEx.Message.ToString() + " :\n" + revFileName, "File error");
-            }
-            String line = "";
-            while(filePresent && (line = mInfile.ReadLine()) != null)
-            {
-                mRevisionData.Add(line);
-            }
-            mInfile.Close();
+
             if (mRevisionData.Count < 1)
             {
                 foreach(String l in mRevisionLines)
@@ -164,10 +167,32 @@ namespace RevEdit
             return relevant;
         }
 
+        private void writeFile()
+        {
+            if (!Directory.Exists(mPath + @"\Documentation\moddoc"))
+                Directory.CreateDirectory(mPath + @"\Documentation\moddoc");
+            using (StreamWriter outfile = new StreamWriter(mPath + @"\Documentation\moddoc\moddoc.txt", false))
+            {
+                foreach (String line in tbModDocPreview.Lines)
+                    outfile.WriteLine(line.ToString());
+            }
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             updateDoc();
             addRevisions();
+        }
+
+        private void bSave_Click(object sender, EventArgs e)
+        {
+            writeFile();
+        }
+
+        private void ModDocForm_Shown(object sender, EventArgs e)
+        {
+            tbCurrentVersion.Text = mCurrentVersion;
+            tbPrevVersion.Text = mPrevVersion;
         }
     }
 }

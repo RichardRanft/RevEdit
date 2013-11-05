@@ -94,6 +94,7 @@
             this.bSave.TabIndex = 8;
             this.bSave.Text = "Save";
             this.bSave.UseVisualStyleBackColor = true;
+            this.bSave.Click += new System.EventHandler(this.bSave_Click);
             // 
             // tbCurrentVersion
             // 
@@ -205,6 +206,7 @@
             this.Controls.Add(this.label1);
             this.Name = "ModDocForm";
             this.Text = "ModDocForm";
+            this.Shown += new System.EventHandler(this.ModDocForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
