@@ -21,6 +21,9 @@ namespace RevEdit
         private StreamReader mInfile;
         private List<String> mSigFileData;
         private List<String> mRevisionData;
+        private ReleaseInfoManager mReleaseManager;
+
+        #region Accessors
 
         public String[] RevisionLines
         {
@@ -43,7 +46,17 @@ namespace RevEdit
                 mPrevVersion = value;
             }
         }
+        public String DataPath
+        {
+            set
+            {
+                mReleaseManager.Path = value;
+                updateMarkets();
+            }
+        }
 
+        #endregion
+        
         public ModDocForm()
         {
             InitializeComponent();
@@ -54,6 +67,7 @@ namespace RevEdit
             mPrevVersion = "N/A";
             mSigFileData = new List<string>();
             mRevisionData = new List<string>();
+            mReleaseManager = new ReleaseInfoManager();
         }
 
         private void bBrowse_Click(object sender, EventArgs e)
@@ -193,6 +207,44 @@ namespace RevEdit
         {
             tbCurrentVersion.Text = mCurrentVersion;
             tbPrevVersion.Text = mPrevVersion;
+            mReleaseManager.Read();
+            updateMarkets();
+        }
+
+        private void updateMarkets()
+        {
+            cbMarket.Items.Clear();
+            foreach (ReleaseDataItem item in mReleaseManager.Items)
+            {
+                bool itemFound = false;
+                foreach (String entry in cbMarket.Items)
+                {
+                    if (item.Market == entry)
+                    {
+                        itemFound = true;
+                        break;
+                    }
+                }
+                if (!itemFound)
+                    cbMarket.Items.Add(item.Market);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (!mReleaseManager.AddRelease(cbMarket.Text, tbCurrentVersion.Text, tbCurrentPlatform.Text, dtpReleaseDate.Value.ToString()))
+            {
+                MessageBox.Show("You must select a valid market to release to.", "Release Error", MessageBoxButtons.OK);
+                return;
+            }
+            mReleaseManager.Write();
+            updateMarkets();
+        }
+
+        private void cbMarket_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Find the latest submission of this title for the selected market and update the 
+            // form fields with the release information.
         }
     }
 }

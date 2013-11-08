@@ -59,6 +59,7 @@ namespace RevEdit
             toolStripStatusLabel2.Text = "";
             updateServerList();
             settingsBox.initializeSettings();
+            mModDocForm.DataPath = settingsBox.Path;
 
             if (settingsBox.AutoLogin)
             {
@@ -352,6 +353,11 @@ namespace RevEdit
             }
         }
 
+        private void findReleaseDataFile()
+        {
+            serviceProvider.checkoutReleaseDataFile();
+        }
+
         private void readFile()
         {
             try
@@ -384,7 +390,11 @@ namespace RevEdit
         private void bSearch_Click(object sender, EventArgs e)
         {
             toolStripStatusLabel2.Text = "Searching...";
+            // Get the revision.txt file for the selected game/view
             findRevisionFile();
+            // Get the releasedata.xml file for the selected game/view
+            findReleaseDataFile();
+            // Focus the text editing area
             tbRevisionText.Focus();
         }
 
@@ -401,7 +411,7 @@ namespace RevEdit
             {
                 if (checkinForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    //serviceProvider.createLabel(tbNewLabel.Text, checkinForm.Comment);
+                    serviceProvider.createLabel(tbNewLabel.Text, checkinForm.Comment);
                     toolStripStatusLabel2.Text = "Checked in and label " + tbNewLabel.Text + " created.";
                 }
                 else
@@ -412,6 +422,7 @@ namespace RevEdit
             }
             else
                 toolStripStatusLabel2.Text = "Checked in.";
+            serviceProvider.checkinReleaseDataFile(settingsBox.Path + @"\releasedata.xml");
         }
 
         private void cbCreateLabel_CheckedChanged(object sender, EventArgs e)

@@ -44,6 +44,13 @@
             this.bBrowse = new System.Windows.Forms.Button();
             this.fbdBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.button1 = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.cbMarket = new System.Windows.Forms.ComboBox();
+            this.tbReleaseVersion = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.dtpReleaseDate = new System.Windows.Forms.DateTimePicker();
             this.SuspendLayout();
             // 
             // label1
@@ -59,7 +66,7 @@
             // 
             this.tbName.Location = new System.Drawing.Point(12, 30);
             this.tbName.Name = "tbName";
-            this.tbName.Size = new System.Drawing.Size(282, 20);
+            this.tbName.Size = new System.Drawing.Size(197, 20);
             this.tbName.TabIndex = 1;
             // 
             // tbModDocPreview
@@ -100,7 +107,7 @@
             // 
             this.tbCurrentVersion.Location = new System.Drawing.Point(12, 70);
             this.tbCurrentVersion.Name = "tbCurrentVersion";
-            this.tbCurrentVersion.Size = new System.Drawing.Size(282, 20);
+            this.tbCurrentVersion.Size = new System.Drawing.Size(197, 20);
             this.tbCurrentVersion.TabIndex = 2;
             // 
             // label2
@@ -114,16 +121,16 @@
             // 
             // tbPrevVersion
             // 
-            this.tbPrevVersion.Location = new System.Drawing.Point(309, 30);
+            this.tbPrevVersion.Location = new System.Drawing.Point(221, 30);
             this.tbPrevVersion.Name = "tbPrevVersion";
-            this.tbPrevVersion.Size = new System.Drawing.Size(282, 20);
+            this.tbPrevVersion.Size = new System.Drawing.Size(174, 20);
             this.tbPrevVersion.TabIndex = 3;
             this.tbPrevVersion.Text = "N/A";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(309, 13);
+            this.label3.Location = new System.Drawing.Point(221, 13);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(86, 13);
             this.label3.TabIndex = 7;
@@ -131,16 +138,16 @@
             // 
             // tbCurrentPlatform
             // 
-            this.tbCurrentPlatform.Location = new System.Drawing.Point(309, 70);
+            this.tbCurrentPlatform.Location = new System.Drawing.Point(221, 70);
             this.tbCurrentPlatform.Name = "tbCurrentPlatform";
-            this.tbCurrentPlatform.Size = new System.Drawing.Size(282, 20);
+            this.tbCurrentPlatform.Size = new System.Drawing.Size(174, 20);
             this.tbCurrentPlatform.TabIndex = 4;
             this.tbCurrentPlatform.Text = "W4NAS07L";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(309, 53);
+            this.label4.Location = new System.Drawing.Point(221, 53);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(82, 13);
             this.label4.TabIndex = 9;
@@ -180,15 +187,84 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 6;
-            this.button1.Text = "button1";
+            this.button1.Text = "Import";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(407, 9);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(40, 13);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "Market";
+            // 
+            // cbMarket
+            // 
+            this.cbMarket.FormattingEnabled = true;
+            this.cbMarket.Location = new System.Drawing.Point(410, 29);
+            this.cbMarket.Name = "cbMarket";
+            this.cbMarket.Size = new System.Drawing.Size(228, 21);
+            this.cbMarket.Sorted = true;
+            this.cbMarket.TabIndex = 14;
+            this.cbMarket.SelectedIndexChanged += new System.EventHandler(this.cbMarket_SelectedIndexChanged);
+            // 
+            // tbReleaseVersion
+            // 
+            this.tbReleaseVersion.Location = new System.Drawing.Point(410, 70);
+            this.tbReleaseVersion.Name = "tbReleaseVersion";
+            this.tbReleaseVersion.Size = new System.Drawing.Size(142, 20);
+            this.tbReleaseVersion.TabIndex = 15;
+            this.tbReleaseVersion.Text = "N/A";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(407, 53);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(90, 13);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "Released Version";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(407, 93);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(78, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Released Date";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(563, 68);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 19;
+            this.button2.Text = "Release";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // dtpReleaseDate
+            // 
+            this.dtpReleaseDate.Location = new System.Drawing.Point(410, 110);
+            this.dtpReleaseDate.Name = "dtpReleaseDate";
+            this.dtpReleaseDate.Size = new System.Drawing.Size(228, 20);
+            this.dtpReleaseDate.TabIndex = 20;
             // 
             // ModDocForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 678);
+            this.Controls.Add(this.dtpReleaseDate);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.tbReleaseVersion);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.cbMarket);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.bBrowse);
             this.Controls.Add(this.lSelectedFolder);
@@ -230,5 +306,12 @@
         private System.Windows.Forms.Button bBrowse;
         private System.Windows.Forms.FolderBrowserDialog fbdBrowser;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cbMarket;
+        private System.Windows.Forms.TextBox tbReleaseVersion;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.DateTimePicker dtpReleaseDate;
     }
 }
