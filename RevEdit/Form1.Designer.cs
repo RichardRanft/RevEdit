@@ -453,6 +453,7 @@
             this.Controls.Add(this.lColumn);
             this.Controls.Add(this.tbRevisionText);
             this.Controls.Add(this.menuStrip1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";

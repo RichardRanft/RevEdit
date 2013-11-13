@@ -283,6 +283,19 @@ namespace RevEdit
             return Labels;
         }
 
+        private Borland.StarTeam.View getRootMarketView(Project stProject, Borland.StarTeam.View stView)
+        {
+            Borland.StarTeam.View temp = stView.ParentView;
+            Borland.StarTeam.View last = stView;
+            while (temp.Name != stProject.DefaultView.Name)
+            {
+                last = temp;
+                temp = last.ParentView;
+            }
+                    
+            return last;
+        }
+
         private List<String> getSubviews(Borland.StarTeam.View stView)
         {
             List<String> list = new List<String>();
@@ -302,14 +315,37 @@ namespace RevEdit
             return list;
         }
 
+        private bool moveFileToView(Borland.StarTeam.Item file, Borland.StarTeam.View targetView)
+        {
+            Borland.StarTeam.Folder rootFolder = targetView.RootFolder;
+            Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
+            file.MoveTo(docFolder);
+            return false;
+        }
+
         public bool checkoutRevisionFile()
         {
             Borland.StarTeam.Item revFile;
             if (getRevisionFile(m_strProject, m_strView, out revFile))
             {
+                Project proj = null;
+                try
+                {
+                    proj = m_server.Projects.FindByName(m_strProject, true);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
+                    return false;
+                }
+                Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
+                Borland.StarTeam.View view = getRootMarketView(proj, currentView);
+                Borland.StarTeam.Folder rootFolder = view.RootFolder;
+                Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
+                Borland.StarTeam.CheckoutManager coManager = view.CreateCheckoutManager();
                 m_revisionFile = (File)revFile;
                 System.IO.FileInfo fileInfo = new System.IO.FileInfo(m_tempFilePath + @"\revision.txt");
-                m_revisionFile.CheckoutTo(fileInfo, Item.LockType.UNCHANGED, false, true, true);
+                coManager.CheckoutTo(m_revisionFile, fileInfo);
                 return true;
             }
             return false;
@@ -320,9 +356,24 @@ namespace RevEdit
             Borland.StarTeam.Item revFile;
             if (getReleaseDataFile(m_strProject, m_strView, out revFile))
             {
+                Project proj = null;
+                try
+                {
+                    proj = m_server.Projects.FindByName(m_strProject, true);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
+                    return false;
+                }
+                Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
+                Borland.StarTeam.View view = getRootMarketView(proj, currentView);
+                Borland.StarTeam.Folder rootFolder = view.RootFolder;
+                Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
+                Borland.StarTeam.CheckoutManager coManager = view.CreateCheckoutManager();
                 m_releaseDataFile = (File)revFile;
                 System.IO.FileInfo fileInfo = new System.IO.FileInfo(m_tempFilePath + @"\releasedata.xml");
-                m_releaseDataFile.CheckoutTo(fileInfo, Item.LockType.UNCHANGED, false, true, true);
+                coManager.CheckoutTo(m_releaseDataFile, fileInfo);
                 return true;
             }
             return false;
@@ -350,14 +401,26 @@ namespace RevEdit
                 MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
                 return false;
             }
-            Borland.StarTeam.View view = proj.Views.FindByName(m_strView, true);
+            Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
+            Borland.StarTeam.View view = getRootMarketView(proj, currentView);
             Borland.StarTeam.Folder rootFolder = view.RootFolder;
             Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
             Borland.StarTeam.CheckinManager manager = view.CreateCheckinManager();
-            m_revisionFile = new File(docFolder);
-            m_revisionFile.Name = "revision.txt";
+            if (m_revisionFile == null)
+            {
+                m_revisionFile = new File(docFolder);
+                m_revisionFile.Name = "revision.txt";
+            }
             System.IO.FileInfo revFile = new System.IO.FileInfo(revPath);
-            manager.CheckinFrom(m_revisionFile, revFile);
+            try
+            {
+                manager.CheckinFrom(m_revisionFile, revFile);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "StarTeam Checkin Error", MessageBoxButtons.OK);
+                return false;
+            }
 
             return true;
         }
@@ -374,14 +437,26 @@ namespace RevEdit
                 MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
                 return false;
             }
-            Borland.StarTeam.View view = proj.Views.FindByName(m_strView, true);
+            Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
+            Borland.StarTeam.View view = getRootMarketView(proj, currentView);
             Borland.StarTeam.Folder rootFolder = view.RootFolder;
             Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
             Borland.StarTeam.CheckinManager manager = view.CreateCheckinManager();
-            m_releaseDataFile = new File(docFolder);
-            m_releaseDataFile.Name = "releasedata.xml";
+            if (m_releaseDataFile == null)
+            {
+                m_releaseDataFile = new File(docFolder);
+                m_releaseDataFile.Name = "releasedata.xml";
+            }
             System.IO.FileInfo revFile = new System.IO.FileInfo(revPath);
-            manager.CheckinFrom(m_revisionFile, revFile);
+            try
+            {
+                manager.CheckinFrom(m_releaseDataFile, revFile);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "StarTeam Checkin Error", MessageBoxButtons.OK);
+                return false;
+            }
 
             return true;
         }

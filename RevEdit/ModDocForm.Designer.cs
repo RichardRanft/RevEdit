@@ -43,14 +43,16 @@
             this.lSelectedFolder = new System.Windows.Forms.Label();
             this.bBrowse = new System.Windows.Forms.Button();
             this.fbdBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.button1 = new System.Windows.Forms.Button();
+            this.bImport = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.cbMarket = new System.Windows.Forms.ComboBox();
             this.tbReleaseVersion = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
+            this.bRelease = new System.Windows.Forms.Button();
             this.dtpReleaseDate = new System.Windows.Forms.DateTimePicker();
+            this.label9 = new System.Windows.Forms.Label();
+            this.lReleasedLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -73,13 +75,13 @@
             // 
             this.tbModDocPreview.AcceptsTab = true;
             this.tbModDocPreview.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbModDocPreview.Location = new System.Drawing.Point(12, 138);
+            this.tbModDocPreview.Location = new System.Drawing.Point(12, 180);
             this.tbModDocPreview.MaxLength = 256000;
             this.tbModDocPreview.MinimumSize = new System.Drawing.Size(626, 404);
             this.tbModDocPreview.Multiline = true;
             this.tbModDocPreview.Name = "tbModDocPreview";
             this.tbModDocPreview.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbModDocPreview.Size = new System.Drawing.Size(626, 499);
+            this.tbModDocPreview.Size = new System.Drawing.Size(626, 457);
             this.tbModDocPreview.TabIndex = 7;
             // 
             // bClose
@@ -156,7 +158,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 93);
+            this.label5.Location = new System.Drawing.Point(12, 164);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(70, 13);
             this.label5.TabIndex = 11;
@@ -165,7 +167,7 @@
             // lSelectedFolder
             // 
             this.lSelectedFolder.AutoSize = true;
-            this.lSelectedFolder.Location = new System.Drawing.Point(88, 93);
+            this.lSelectedFolder.Location = new System.Drawing.Point(88, 164);
             this.lSelectedFolder.Name = "lSelectedFolder";
             this.lSelectedFolder.Size = new System.Drawing.Size(98, 13);
             this.lSelectedFolder.TabIndex = 12;
@@ -173,7 +175,7 @@
             // 
             // bBrowse
             // 
-            this.bBrowse.Location = new System.Drawing.Point(12, 109);
+            this.bBrowse.Location = new System.Drawing.Point(12, 96);
             this.bBrowse.Name = "bBrowse";
             this.bBrowse.Size = new System.Drawing.Size(116, 23);
             this.bBrowse.TabIndex = 5;
@@ -181,15 +183,16 @@
             this.bBrowse.UseVisualStyleBackColor = true;
             this.bBrowse.Click += new System.EventHandler(this.bBrowse_Click);
             // 
-            // button1
+            // bImport
             // 
-            this.button1.Location = new System.Drawing.Point(134, 109);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Import";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.bImport.Enabled = false;
+            this.bImport.Location = new System.Drawing.Point(134, 96);
+            this.bImport.Name = "bImport";
+            this.bImport.Size = new System.Drawing.Size(75, 23);
+            this.bImport.TabIndex = 6;
+            this.bImport.Text = "Import";
+            this.bImport.UseVisualStyleBackColor = true;
+            this.bImport.Click += new System.EventHandler(this.button1_Click);
             // 
             // label6
             // 
@@ -230,42 +233,63 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(407, 93);
+            this.label8.Location = new System.Drawing.Point(407, 110);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(78, 13);
             this.label8.TabIndex = 18;
             this.label8.Text = "Released Date";
             // 
-            // button2
+            // bRelease
             // 
-            this.button2.Location = new System.Drawing.Point(563, 68);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 19;
-            this.button2.Text = "Release";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.bRelease.Enabled = false;
+            this.bRelease.Location = new System.Drawing.Point(563, 68);
+            this.bRelease.Name = "bRelease";
+            this.bRelease.Size = new System.Drawing.Size(75, 23);
+            this.bRelease.TabIndex = 19;
+            this.bRelease.Text = "Release";
+            this.bRelease.UseVisualStyleBackColor = true;
+            this.bRelease.Click += new System.EventHandler(this.bRelease_Click);
             // 
             // dtpReleaseDate
             // 
-            this.dtpReleaseDate.Location = new System.Drawing.Point(410, 110);
+            this.dtpReleaseDate.Location = new System.Drawing.Point(410, 127);
             this.dtpReleaseDate.Name = "dtpReleaseDate";
             this.dtpReleaseDate.Size = new System.Drawing.Size(228, 20);
             this.dtpReleaseDate.TabIndex = 20;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(407, 93);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(84, 13);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "Released Label:";
+            // 
+            // lReleasedLabel
+            // 
+            this.lReleasedLabel.AutoSize = true;
+            this.lReleasedLabel.Location = new System.Drawing.Point(497, 93);
+            this.lReleasedLabel.Name = "lReleasedLabel";
+            this.lReleasedLabel.Size = new System.Drawing.Size(41, 13);
+            this.lReleasedLabel.TabIndex = 22;
+            this.lReleasedLabel.Text = "label10";
             // 
             // ModDocForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 678);
+            this.Controls.Add(this.lReleasedLabel);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.dtpReleaseDate);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.bRelease);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.tbReleaseVersion);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.cbMarket);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.bImport);
             this.Controls.Add(this.bBrowse);
             this.Controls.Add(this.lSelectedFolder);
             this.Controls.Add(this.label5);
@@ -280,6 +304,7 @@
             this.Controls.Add(this.tbModDocPreview);
             this.Controls.Add(this.tbName);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "ModDocForm";
             this.Text = "ModDocForm";
             this.Shown += new System.EventHandler(this.ModDocForm_Shown);
@@ -305,13 +330,15 @@
         private System.Windows.Forms.Label lSelectedFolder;
         private System.Windows.Forms.Button bBrowse;
         private System.Windows.Forms.FolderBrowserDialog fbdBrowser;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button bImport;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cbMarket;
         private System.Windows.Forms.TextBox tbReleaseVersion;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button bRelease;
         private System.Windows.Forms.DateTimePicker dtpReleaseDate;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label lReleasedLabel;
     }
 }

@@ -253,9 +253,7 @@ namespace RevEdit
 
             serviceProvider.disconnect();
 
-            System.IO.FileInfo info = new FileInfo(settingsBox.Path + @"\revision.txt");
-            if (info.Exists)
-                info.Delete();
+            cleanupTempFiles();
 
             toolStripStatusLabel1.Text = "Disconnected.";
         }
@@ -263,7 +261,15 @@ namespace RevEdit
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             serviceProvider.disconnect();
+            cleanupTempFiles();
+        }
+
+        private void cleanupTempFiles()
+        {
             System.IO.FileInfo info = new FileInfo(settingsBox.Path + @"\revision.txt");
+            if (info.Exists)
+                info.Delete();
+            info = new FileInfo(settingsBox.Path + @"\releasedata.xml");
             if (info.Exists)
                 info.Delete();
         }
@@ -281,6 +287,8 @@ namespace RevEdit
             }
             if (cbViewList.Items.Count > 0)
                 cbViewList.Text = cbViewList.Items[0].ToString();
+
+            cleanupTempFiles();
         }
 
         private void cbViewList_SelectedIndexChanged(object sender, EventArgs e)
@@ -301,6 +309,8 @@ namespace RevEdit
                 cbStartLabelList.Text = cbStartLabelList.Items[0].ToString();
             if (cbEndLabelList.Items.Count > 0)
                 cbEndLabelList.Text = cbEndLabelList.Items[0].ToString();
+
+            cleanupTempFiles();
         }
 
         private void cbStartLabelList_SelectedIndexChanged(object sender, EventArgs e)
@@ -541,6 +551,7 @@ namespace RevEdit
             mModDocForm.CurrentVersion = tbCurrVersion.Text;
             if (tbPrevVersion.Text != "")
                 mModDocForm.PreviousVersion = tbPrevVersion.Text;
+            mModDocForm.LastLabel = cbEndLabelList.Text;
             mModDocForm.ShowDialog();
         }
 

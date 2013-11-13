@@ -17,6 +17,7 @@ namespace RevEdit
         private String mSHA1;
         private String mCurrentVersion;
         private String mPrevVersion;
+        private String mLastLabel;
         private String[] mRevisionLines;
         private StreamReader mInfile;
         private List<String> mSigFileData;
@@ -46,6 +47,13 @@ namespace RevEdit
                 mPrevVersion = value;
             }
         }
+        public String LastLabel
+        {
+            set
+            {
+                mLastLabel = value;
+            }
+        }
         public String DataPath
         {
             set
@@ -65,6 +73,7 @@ namespace RevEdit
             mSHA1 = "";
             mCurrentVersion = "";
             mPrevVersion = "N/A";
+            mLastLabel = "";
             mSigFileData = new List<string>();
             mRevisionData = new List<string>();
             mReleaseManager = new ReleaseInfoManager();
@@ -77,6 +86,8 @@ namespace RevEdit
                 mPath = fbdBrowser.SelectedPath;
                 lSelectedFolder.Text = mPath;
                 getSignatures();
+                bRelease.Enabled = true;
+                bImport.Enabled = true;
             }
         }
 
@@ -207,8 +218,11 @@ namespace RevEdit
         {
             tbCurrentVersion.Text = mCurrentVersion;
             tbPrevVersion.Text = mPrevVersion;
+            bRelease.Enabled = false;
+            bImport.Enabled = false;
             mReleaseManager.Read();
             updateMarkets();
+            lReleasedLabel.Text = mLastLabel;
         }
 
         private void updateMarkets()
@@ -230,21 +244,37 @@ namespace RevEdit
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void bRelease_Click(object sender, EventArgs e)
         {
-            if (!mReleaseManager.AddRelease(cbMarket.Text, tbCurrentVersion.Text, tbCurrentPlatform.Text, dtpReleaseDate.Value.ToString()))
+            tbReleaseVersion.Text = tbCurrentVersion.Text;
+            lReleasedLabel.Text = mLastLabel;
+            if (!mReleaseManager.Release(cbMarket.Text, tbReleaseVersion.Text, lReleasedLabel.Text, tbCurrentPlatform.Text, dtpReleaseDate.Value.ToString()))
             {
-                MessageBox.Show("You must select a valid market to release to.", "Release Error", MessageBoxButtons.OK);
+                MessageBox.Show("Release information is incomplete.  Cannot create release log entry from the data provided.", "Release Error", MessageBoxButtons.OK);
                 return;
             }
             mReleaseManager.Write();
             updateMarkets();
+            refreshReleaseData();
         }
 
         private void cbMarket_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Find the latest submission of this title for the selected market and update the 
             // form fields with the release information.
+            refreshReleaseData();
+        }
+
+        private void refreshReleaseData()
+        {
+            foreach (ReleaseDataItem item in mReleaseManager.Items)
+            {
+                if (cbMarket.Text == item.Market)
+                {
+                    tbReleaseVersion.Text = item.Version;
+                    lReleasedLabel.Text = item.ReleaseLabel;
+                }
+            }
         }
     }
 }

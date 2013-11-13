@@ -15,6 +15,7 @@ namespace RevEdit
         private String mVersion;
         private String mPlatform;
         private String mReleaseDate;
+        private String mReleaseLabel;
 
         #region Accessors
 
@@ -62,6 +63,17 @@ namespace RevEdit
                 mReleaseDate = value;
             }
         }
+        public String ReleaseLabel
+        {
+            get
+            {
+                return mReleaseLabel;
+            }
+            set
+            {
+                mReleaseLabel = value;
+            }
+        }
         #endregion
 
         public ReleaseDataItem()
@@ -70,6 +82,7 @@ namespace RevEdit
             mVersion = "";
             mPlatform = "";
             mReleaseDate = "";
+            mReleaseLabel = "";
         }
     }
 
@@ -169,7 +182,34 @@ namespace RevEdit
             return true;
         }
 
-        public bool AddRelease(String Market, String Version, String Platform, String Date)
+        public bool Release(String Market, String Version, String Label, String Platform, String Date)
+        {
+            if (Market == "" || Version == "" || Label == "" || Platform == "" || Date == "")
+            {
+                MessageBox.Show("Missing Release information:" + Environment.NewLine +
+                                "Market   : " + Market + Environment.NewLine +
+                                "Version  : " + Version + Environment.NewLine +
+                                "Label  : " + Label + Environment.NewLine +
+                                "Platform : " + Platform + Environment.NewLine +
+                                "Date     : " + Date + Environment.NewLine, "Release Data Incomplete", MessageBoxButtons.OK);
+                return false;
+            }
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                // do we have a release of this version on this platform in this market?
+                if (item.Market == Market && item.Version == Version && item.Platform == Platform)
+                {
+                    // apparently yes.
+                    item.ReleaseLabel = Label;
+                    item.ReleaseDate = Date;
+                    return true;
+                }
+            }
+            // No matching release in the indicated market, add new release data to the list
+            return AddRelease(Market, Version, Label, Platform, Date);
+        }
+
+        public bool AddRelease(String Market, String Version, String Label, String Platform, String Date)
         {
             if (mFilePath == null)
                 return false;
@@ -178,6 +218,7 @@ namespace RevEdit
             ReleaseDataItem node = new ReleaseDataItem();
             node.Market = Market;
             node.Version = Version;
+            node.ReleaseLabel = Label;
             node.Platform = Platform;
             node.ReleaseDate = Date;
             mReleaseData.Add(node);
