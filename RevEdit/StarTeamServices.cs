@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Borland.StarTeam;
-using Type = Borland.StarTeam.Type;
+using StarTeam;
+using Type = StarTeam.Type;
 
 namespace RevEdit
 {    
@@ -180,8 +180,17 @@ namespace RevEdit
         {
             // Create the Server object.
             if (m_server == null)
-                m_server = new Server(m_strServer, m_nPort);
-
+            {
+                try
+                {
+                    m_server = new Server(m_strServer, m_nPort);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Server Not Initialized");
+                    return false;
+                }
+            }
             if (m_server == null)
                 return false;
 
@@ -193,6 +202,7 @@ namespace RevEdit
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Login Problem");
+                return false;
             }
 
             // Determine which Item Types to display.
@@ -226,11 +236,11 @@ namespace RevEdit
             List<String> viewList = new List<String>();
             List<String> subViews = new List<String>();
             // get a list of views in this project
-            Project stProject = m_server.Projects.FindByName(project, true);
-            Borland.StarTeam.ViewCollection projectViews = stProject.DefaultView.DerivedViews;
+            Project stProject = m_server.FindProject(project);
+            StarTeam.View[] projectViews = stProject.DefaultView.DerivedViews;
 
             // For each view ...
-            foreach (Borland.StarTeam.View stView in projectViews)
+            foreach (StarTeam.View stView in projectViews)
             {
                 viewList.Add(stView.Name);
                 subViews = getSubviews(stView);
@@ -248,31 +258,31 @@ namespace RevEdit
         {
             List<String> labelList = new List<String>();
             // get a list of labels
-            Project stProject = m_server.Projects.FindByName(project, true);
-            Borland.StarTeam.View stView = stProject.Views.FindByName(view, true);
-            Borland.StarTeam.Label[] labels = stView.FetchAllLabels();
+            Project stProject = m_server.FindProject(project);
+            StarTeam.View stView = stProject.FindView(view);
+            StarTeam.Label[] labels = stView.FetchAllLabels();
 
             // For each view ...
-            foreach (Borland.StarTeam.Label l in labels)
+            foreach (StarTeam.Label l in labels)
             {
                 labelList.Add(l.Name);
             }
             return labelList;
         }
 
-        private Borland.StarTeam.LabelCollection getLabelFromSubview(Borland.StarTeam.View stView, String viewName)
+        private StarTeam.Label[] getLabelFromSubview(StarTeam.View stView, String viewName)
         {
             // get a list of labels
-            LabelCollection Labels = new LabelCollection();
+            StarTeam.Label[] Labels = null;
             if (stView.Name == viewName)
             {
                 Labels = stView.Labels;
             }
-            Borland.StarTeam.ViewCollection subViews = stView.DerivedViews;
-            if (subViews.Count > 0)
+            StarTeam.View[] subViews = stView.DerivedViews;
+            if (subViews.Length > 0)
             {
                 // For each view ...
-                foreach (Borland.StarTeam.View subView in subViews)
+                foreach (StarTeam.View subView in subViews)
                 {
                     if (subView.Name == viewName)
                     {
@@ -283,10 +293,10 @@ namespace RevEdit
             return Labels;
         }
 
-        private Borland.StarTeam.View getRootMarketView(Project stProject, Borland.StarTeam.View stView)
+        private StarTeam.View getRootMarketView(Project stProject, StarTeam.View stView)
         {
-            Borland.StarTeam.View temp = stView.ParentView;
-            Borland.StarTeam.View last = stView;
+            StarTeam.View temp = stView.ParentView;
+            StarTeam.View last = stView;
             while (temp.Name != stProject.DefaultView.Name)
             {
                 last = temp;
@@ -296,16 +306,16 @@ namespace RevEdit
             return last;
         }
 
-        private List<String> getSubviews(Borland.StarTeam.View stView)
+        private List<String> getSubviews(StarTeam.View stView)
         {
             List<String> list = new List<String>();
-            if (stView.DerivedViews.Count > 0)
+            if (stView.DerivedViews.Length > 0)
             {
                 // For each Item Type ...
-                foreach (Borland.StarTeam.View v in stView.DerivedViews)
+                foreach (StarTeam.View v in stView.DerivedViews)
                 {
                     list.Add("  " + v.Name);
-                    if (v.DerivedViews.Count > 0)
+                    if (v.DerivedViews.Length > 0)
                     {
                         List<String> subList = new List<String>();
                         subList = getSubviews(v);
@@ -315,34 +325,34 @@ namespace RevEdit
             return list;
         }
 
-        private bool moveFileToView(Borland.StarTeam.Item file, Borland.StarTeam.View targetView)
+        private bool moveFileToView(StarTeam.Item file, StarTeam.View targetView)
         {
-            Borland.StarTeam.Folder rootFolder = targetView.RootFolder;
-            Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
+            StarTeam.Folder rootFolder = targetView.RootFolder;
+            StarTeam.Folder docFolder = rootFolder.FindSubFolder("documents");
             file.MoveTo(docFolder);
             return false;
         }
 
         public bool checkoutRevisionFile()
         {
-            Borland.StarTeam.Item revFile;
+            StarTeam.Item revFile;
             if (getRevisionFile(m_strProject, m_strView, out revFile))
             {
                 Project proj = null;
                 try
                 {
-                    proj = m_server.Projects.FindByName(m_strProject, true);
+                    proj = m_server.FindProject(m_strProject);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
                     return false;
                 }
-                Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
-                Borland.StarTeam.View view = getRootMarketView(proj, currentView);
-                Borland.StarTeam.Folder rootFolder = view.RootFolder;
-                Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
-                Borland.StarTeam.CheckoutManager coManager = view.CreateCheckoutManager();
+                StarTeam.View currentView = proj.FindView(m_strView);
+                StarTeam.View view = getRootMarketView(proj, currentView);
+                StarTeam.Folder rootFolder = view.RootFolder;
+                StarTeam.Folder docFolder = rootFolder.FindSubFolder("documents");
+                StarTeam.CheckoutManager coManager = view.CreateCheckoutManager();
                 m_revisionFile = (File)revFile;
                 System.IO.FileInfo fileInfo = new System.IO.FileInfo(m_tempFilePath + @"\revision.txt");
                 coManager.CheckoutTo(m_revisionFile, fileInfo);
@@ -353,24 +363,24 @@ namespace RevEdit
 
         public bool checkoutReleaseDataFile()
         {
-            Borland.StarTeam.Item revFile;
+            StarTeam.Item revFile;
             if (getReleaseDataFile(m_strProject, m_strView, out revFile))
             {
                 Project proj = null;
                 try
                 {
-                    proj = m_server.Projects.FindByName(m_strProject, true);
+                    proj = m_server.FindProject(m_strProject);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
                     return false;
                 }
-                Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
-                Borland.StarTeam.View view = getRootMarketView(proj, currentView);
-                Borland.StarTeam.Folder rootFolder = view.RootFolder;
-                Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
-                Borland.StarTeam.CheckoutManager coManager = view.CreateCheckoutManager();
+                StarTeam.View currentView = proj.FindView(m_strView);
+                StarTeam.View view = getRootMarketView(proj, currentView);
+                StarTeam.Folder rootFolder = view.RootFolder;
+                StarTeam.Folder docFolder = rootFolder.FindSubFolder("documents");
+                StarTeam.CheckoutManager coManager = view.CreateCheckoutManager();
                 m_releaseDataFile = (File)revFile;
                 System.IO.FileInfo fileInfo = new System.IO.FileInfo(m_tempFilePath + @"\releasedata.xml");
                 coManager.CheckoutTo(m_releaseDataFile, fileInfo);
@@ -394,21 +404,21 @@ namespace RevEdit
             Project proj = null;
             try
             {
-                proj = m_server.Projects.FindByName(m_strProject, true);
+                proj = m_server.FindProject(m_strProject);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
                 return false;
             }
-            Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
-            Borland.StarTeam.View view = getRootMarketView(proj, currentView);
-            Borland.StarTeam.Folder rootFolder = view.RootFolder;
-            Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
-            Borland.StarTeam.CheckinManager manager = view.CreateCheckinManager();
+            StarTeam.View currentView = proj.FindView(m_strView);
+            StarTeam.View view = getRootMarketView(proj, currentView);
+            StarTeam.Folder rootFolder = view.RootFolder;
+            StarTeam.Folder docFolder = rootFolder.FindSubFolder("documents");
+            StarTeam.CheckinManager manager = view.CreateCheckinManager();
             if (m_revisionFile == null)
             {
-                m_revisionFile = new File(docFolder);
+                m_revisionFile = File.Create(docFolder);
                 m_revisionFile.Name = "revision.txt";
             }
             System.IO.FileInfo revFile = new System.IO.FileInfo(revPath);
@@ -430,21 +440,21 @@ namespace RevEdit
             Project proj = null;
             try
             {
-                proj = m_server.Projects.FindByName(m_strProject, true);
+                proj = m_server.FindProject(m_strProject);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
                 return false;
             }
-            Borland.StarTeam.View currentView = proj.Views.FindByName(m_strView, true);
-            Borland.StarTeam.View view = getRootMarketView(proj, currentView);
-            Borland.StarTeam.Folder rootFolder = view.RootFolder;
-            Borland.StarTeam.Folder docFolder = Borland.StarTeam.StarTeamFinder.FindFolder(rootFolder, "documents");
-            Borland.StarTeam.CheckinManager manager = view.CreateCheckinManager();
+            StarTeam.View currentView = proj.FindView(m_strView);
+            StarTeam.View view = getRootMarketView(proj, currentView);
+            StarTeam.Folder rootFolder = view.RootFolder;
+            StarTeam.Folder docFolder = rootFolder.FindSubFolder("documents");
+            StarTeam.CheckinManager manager = view.CreateCheckinManager();
             if (m_releaseDataFile == null)
             {
-                m_releaseDataFile = new File(docFolder);
+                m_releaseDataFile = File.Create(docFolder);
                 m_releaseDataFile.Name = "releasedata.xml";
             }
             System.IO.FileInfo revFile = new System.IO.FileInfo(revPath);
@@ -463,9 +473,9 @@ namespace RevEdit
 
         public bool createLabel(String label, String comment)
         {
-            Project proj = m_server.Projects.FindByName(m_strProject, true);
-            Borland.StarTeam.View view = proj.Views.FindByName(m_strView, true);
-            Borland.StarTeam.Label newLabel = view.CreateRevisionLabel(label, comment, false);
+            Project proj = m_server.FindProject(m_strProject);
+            StarTeam.View view = proj.FindView(m_strView);
+            StarTeam.Label newLabel = view.CreateRevisionLabel(label, comment, false);
 
             if (newLabel != null)
                 return true;
@@ -473,20 +483,20 @@ namespace RevEdit
             return false;
         }
 
-        private bool getRevisionFile(String project, String view, out Borland.StarTeam.Item item)
+        private bool getRevisionFile(String project, String view, out StarTeam.Item item)
         {
             if (project == "" || project == null)
             {
                 item = null;
                 return false;
             }
-            Project stProject = m_server.Projects.FindByName(project, true);
+            Project stProject = m_server.FindProject(project);
             if ( view == "" || view == null)
             {
                 item = null;
                 return false;
             }
-            Borland.StarTeam.View targetView = findView(stProject, view);
+            StarTeam.View targetView = findView(stProject, view);
             if (targetView == null)
             {
                 item = null;
@@ -498,23 +508,23 @@ namespace RevEdit
             return false;
         }
 
-        private Borland.StarTeam.Item FindInView(Server stServer, Project stProject, Borland.StarTeam.View stView, String fileName)
+        private StarTeam.Item FindInView(Server stServer, Project stProject, StarTeam.View stView, String fileName)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             // For each Item Type ...
             foreach (DictionaryEntry e in m_stItemTypes)
             {
-                Type stType = (Type)e.Value;
+                Item.Type stType = (Item.Type)e.Value;
                 item = FindInType(stServer, stProject, stView, stType, fileName);
             }
             return item;
         }
 
-        private Borland.StarTeam.Item FindInFolder(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder, String fileName)
+        private StarTeam.Item FindInFolder(Server stServer, Project stProject, StarTeam.View stView, Item.Type stType, Folder stFolder, String fileName)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             // For each item of the appropriate type ...
-            foreach (Item stItem in stFolder.GetItems(stType.Name))
+            foreach (Item stItem in stFolder.GetItems(stType))
             {
                 item = FindItem(stServer, stProject, stView, stType, stFolder, stItem, fileName);
                 if (item != null)
@@ -534,16 +544,16 @@ namespace RevEdit
             return item;
         }
 
-        private Borland.StarTeam.Item FindInType(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, String fileName)
+        private StarTeam.Item FindInType(Server stServer, Project stProject, StarTeam.View stView, Item.Type stType, String fileName)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             // By default, start searching from the root folder.
             Folder stFolder = stView.RootFolder;
 
             // If a specfic path was specified, search for it.
             if (m_strFolder != null)
             {
-                Folder stTempFolder = StarTeamFinder.FindFolder(stFolder, m_strFolder);
+                Folder stTempFolder = stFolder.FindSubFolder(m_strFolder);
                 if (stTempFolder == null)
                 {
                     string strMessage = "Folder \"";
@@ -559,61 +569,23 @@ namespace RevEdit
                 stFolder = stTempFolder;
             }
 
-            // For performance reasons, it is important to pre-fetch all the
-            // properties we'll need for all the items we'll be searching.
-
-            // Get the PropertyNames object for this server.
-            PropertyNames stPropertyNames = stServer.PropertyNames;
-
-            // Build a collection of property names.
-            StringCollection stPopulateNames = new StringCollection();
-
-            // We always display the ItemID (OBJECT_ID).
-            stPopulateNames.Add(stPropertyNames.OBJECT_ID);
-
-            // If we're checking the last modified date,
-            // we'll need MODIFIED_TIME, too.
-            if (m_bUseDateFilter)
-            {
-                stPopulateNames.Add(stPropertyNames.MODIFIED_TIME);
-            }
-
-            // Does this item type have a primary descriptor?
-            // If so, we'll need it.
-            Property p1 = GetPrimaryDescriptor(stType);
-            if (p1 != null)
-            {
-                stPopulateNames.Add(p1.Name);
-            }
-
-            // Does this item type have a secondary descriptor?
-            // If so, we'll need it.
-            Property p2 = GetSecondaryDescriptor(stType);
-            if (p2 != null)
-            {
-                stPopulateNames.Add(p2.Name);
-            }
-
-            // Convert to an array.
-            string[] names = new string[stPopulateNames.Count];
-            stPopulateNames.CopyTo(names, 0);
-
             // Pre-fetch the item properties and cache them.
             int depth = (m_bRecursive ? -1 : 0);
-            stFolder.PopulateNow(stType.Name, names, depth);
+            stFolder.Populate(stType, depth);
 
             // Now, search for items in the selected folder.
             item = FindInFolder(stServer, stProject, stView, stType, stFolder, fileName);
-
+            //RunFolder(stServer, stProject, stView, stType, stFolder);
+		
             // Free up the memory used by the cached items.
-            stFolder.DiscardItems(stType.Name, depth);
+            stFolder.DiscardItems(stType, depth);
 
             return item;
         }
 
-        private Borland.StarTeam.Item FindItem(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder, Item stItem, String fileName)
+        private StarTeam.Item FindItem(Server stServer, Project stProject, StarTeam.View stView, Item.Type stType, Folder stFolder, Item stItem, String fileName)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             File temp = (File)stItem;
             if (temp.Name == fileName)
                 item = stItem;
@@ -622,20 +594,20 @@ namespace RevEdit
             return item;
         }
 
-        private bool getReleaseDataFile(String project, String view, out Borland.StarTeam.Item item)
+        private bool getReleaseDataFile(String project, String view, out StarTeam.Item item)
         {
             if (project == "" || project == null)
             {
                 item = null;
                 return false;
             }
-            Project stProject = m_server.Projects.FindByName(project, true);
+            Project stProject = m_server.FindProject(project);
             if (view == "" || view == null)
             {
                 item = null;
                 return false;
             }
-            Borland.StarTeam.View targetView = findView(stProject, view);
+            StarTeam.View targetView = findView(stProject, view);
             if (targetView == null)
             {
                 item = null;
@@ -647,19 +619,19 @@ namespace RevEdit
             return false;
         }
 
-        private Borland.StarTeam.View findView(Project stProject, String viewName)
+        private StarTeam.View findView(Project stProject, String viewName)
         {
-            for (int i = 0; i < stProject.Views.Count; i++)
+            for (int i = 0; i < stProject.Views.Length; i++)
             {
                 if (stProject.Views[i].Name == viewName)
                     return stProject.Views[i];
-                foreach (Borland.StarTeam.View subView in stProject.Views[i].DerivedViews)
+                foreach (StarTeam.View subView in stProject.Views[i].DerivedViews)
                 {
                     if (subView.Name == viewName)
                         return subView;
                     else
                     {
-                        Borland.StarTeam.View temp = findSubView(subView, viewName);
+                        StarTeam.View temp = findSubView(subView, viewName);
                         if (temp == null)
                             continue;
                         if (temp.Name == viewName)
@@ -670,9 +642,9 @@ namespace RevEdit
             return null;
         }
 
-        private Borland.StarTeam.View findSubView(Borland.StarTeam.View stView, String viewName)
+        private StarTeam.View findSubView(StarTeam.View stView, String viewName)
         {
-            foreach (Borland.StarTeam.View subView in stView.DerivedViews)
+            foreach (StarTeam.View subView in stView.DerivedViews)
             {
                 if (subView.Name == viewName)
                     return subView;
@@ -684,7 +656,7 @@ namespace RevEdit
         // Finds the test project.
         public Project GetProject(Server s, String strName)
         {
-            return s.Projects.FindByName(strName, false);
+            return s.FindProject(strName);
         }
 
         // ----------------------------------------------------------------------------
@@ -696,7 +668,7 @@ namespace RevEdit
             // If no types were specified, search only "File" by default.
             if (typeNames.Count == 0)
             {
-                typeNames.Add(s.TypeNames.FILE);
+                typeNames.Add(s.Types.FILE.Name);
             }
 
                 // If "*" was specified, we'll search all item types.
@@ -736,7 +708,7 @@ namespace RevEdit
             // For each type ...
             foreach (Type stType in s.Types)
             {
-                if (stType.IsItemType)
+                if (stType.IsComponentType)
                 {
                     dict.Add(stType.Name, stType);
                 }
@@ -751,10 +723,10 @@ namespace RevEdit
         // ----------------------------------------------------------------------------
         Type GetItemType(Server s, string strName)
         {
-            if (s.IsTypeSupported(strName))
+            if (s.Types.Find(strName) != null)
             {
-                Type stType = s.TypeForName(strName);
-                if (stType.IsItemType)
+                Type stType = s.Types.Find(strName);
+                if (stType is Item.Type)
                     return (stType);
             }
             return (null);
@@ -763,13 +735,13 @@ namespace RevEdit
         // ----------------------------------------------------------------------------
         // Searches the given view.
         // ----------------------------------------------------------------------------
-        private Borland.StarTeam.Item RunView(Server stServer, Project stProject, Borland.StarTeam.View stView)
+        private StarTeam.Item RunView(Server stServer, Project stProject, StarTeam.View stView)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             // For each Item Type ...
             foreach (DictionaryEntry e in m_stItemTypes)
             {
-                Type stType = (Type)e.Value;
+                Item.Type stType = (Item.Type)e.Value;
                 item = RunType(stServer, stProject, stView, stType);
             }
             return item;
@@ -778,16 +750,16 @@ namespace RevEdit
         // ----------------------------------------------------------------------------
         // Searches the given view for all relevant items of the given type.
         // ----------------------------------------------------------------------------
-        private Borland.StarTeam.Item RunType(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType)
+        private StarTeam.Item RunType(Server stServer, Project stProject, StarTeam.View stView, Item.Type stType)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             // By default, start searching from the root folder.
             Folder stFolder = stView.RootFolder;
 
             // If a specfic path was specified, search for it.
             if (m_strFolder != null)
             {
-                Folder stTempFolder = StarTeamFinder.FindFolder(stFolder, m_strFolder);
+                Folder stTempFolder = stFolder.FindSubFolder(m_strFolder);
                 if (stTempFolder == null)
                 {
                     string strMessage = "Folder \"";
@@ -803,54 +775,20 @@ namespace RevEdit
                 stFolder = stTempFolder;
             }
 
-            // For performance reasons, it is important to pre-fetch all the
-            // properties we'll need for all the items we'll be searching.
-
-            // Get the PropertyNames object for this server.
-            PropertyNames stPropertyNames = stServer.PropertyNames;
-
-            // Build a collection of property names.
-            StringCollection stPopulateNames = new StringCollection();
-
-            // We always display the ItemID (OBJECT_ID).
-            stPopulateNames.Add(stPropertyNames.OBJECT_ID);
-
-            // If we're checking the last modified date,
-            // we'll need MODIFIED_TIME, too.
-            if (m_bUseDateFilter)
-            {
-                stPopulateNames.Add(stPropertyNames.MODIFIED_TIME);
-            }
-
-            // Does this item type have a primary descriptor?
-            // If so, we'll need it.
-            Property p1 = GetPrimaryDescriptor(stType);
-            if (p1 != null)
-            {
-                stPopulateNames.Add(p1.Name);
-            }
-
-            // Does this item type have a secondary descriptor?
-            // If so, we'll need it.
-            Property p2 = GetSecondaryDescriptor(stType);
-            if (p2 != null)
-            {
-                stPopulateNames.Add(p2.Name);
-            }
-
-            // Convert to an array.
-            string[] names = new string[stPopulateNames.Count];
-            stPopulateNames.CopyTo(names, 0);
-
             // Pre-fetch the item properties and cache them.
             int depth = (m_bRecursive ? -1 : 0);
-            stFolder.PopulateNow(stType.Name, names, depth);
+            stFolder.Populate(stType, depth);
 
+            // Now, search for items in the selected folder.
+            RunFolder(stServer, stProject, stView, stType, stFolder);
+
+            // Free up the memory used by the cached items.
+            stFolder.DiscardItems(stType, depth);
             // Now, search for items in the selected folder.
             item = RunFolder(stServer, stProject, stView, stType, stFolder);
 
             // Free up the memory used by the cached items.
-            stFolder.DiscardItems(stType.Name, depth);
+            stFolder.DiscardItems(stType, depth);
 
             return item;
         }
@@ -858,11 +796,11 @@ namespace RevEdit
         // ----------------------------------------------------------------------------
         // Searches the given folder.
         // ----------------------------------------------------------------------------
-        private Borland.StarTeam.Item RunFolder(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder)
+        private StarTeam.Item RunFolder(Server stServer, Project stProject, StarTeam.View stView, Item.Type stType, Folder stFolder)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             // For each item of the appropriate type ...
-            foreach (Item stItem in stFolder.GetItems(stType.Name))
+            foreach (Item stItem in stFolder.GetItems(stType))
             {
                 item = RunItem(stServer, stProject, stView, stType, stFolder, stItem);
                 if (item != null)
@@ -885,9 +823,9 @@ namespace RevEdit
         // ----------------------------------------------------------------------------
         // Processes the given Item.
         // ----------------------------------------------------------------------------
-        private Borland.StarTeam.Item RunItem(Server stServer, Project stProject, Borland.StarTeam.View stView, Type stType, Folder stFolder, Item stItem)
+        private StarTeam.Item RunItem(Server stServer, Project stProject, StarTeam.View stView, Item.Type stType, Folder stFolder, Item stItem)
         {
-            Borland.StarTeam.Item item = null;
+            StarTeam.Item item = null;
             File temp = (File)stItem;
             if (temp.Name == "revision.txt")
                 item = stItem;
@@ -933,7 +871,7 @@ namespace RevEdit
             string str = stProperty.GetDisplayValue(val);
 
             // Text-valued properties.
-            if (stProperty.TypeCode == Property.Types.TEXT)
+            if (stProperty is TextProperty)
             {
                 if (str.Length > 32)
                 {
