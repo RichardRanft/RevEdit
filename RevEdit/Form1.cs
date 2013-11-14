@@ -11,9 +11,6 @@ using System.Windows.Forms;
 using System.Xml;
 using System.IO;
 
-using Borland.StarTeam;
-using Type = Borland.StarTeam.Type;
-
 namespace RevEdit
 {
     public partial class MainForm : Form

@@ -66,14 +66,17 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Borland.StarTeam, Version=11.0.0.66, Culture=neutral, PublicKeyToken=c4c57974ea1e3017, processorArchitecture=MSIL">
+    <Reference Include="StarTeam, Version=13.0.0.32, Culture=neutral, PublicKeyToken=6467016da958242f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\Borland.StarTeam\11.0.0.66__c4c57974ea1e3017\Borland.StarTeam.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\StarTeam\13.0.0.32__6467016da958242f\StarTeam.dll</HintPath>
     </Reference>
-    <Reference Include="Borland.StarTeam.Core, Version=11.0.0.66, Culture=neutral, PublicKeyToken=c4c57974ea1e3017, processorArchitecture=x86">
+    <Reference Include="StarTeam.Core, Version=13.0.0.32, Culture=neutral, PublicKeyToken=6467016da958242f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_32\Borland.StarTeam.Core\11.0.0.66__c4c57974ea1e3017\Borland.StarTeam.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\StarTeam.Core\13.0.0.32__6467016da958242f\StarTeam.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -163,39 +166,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Documentation\DesignNotes.txt" />
-    <Content Include="vjsc.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjscor.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjsjbc.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjslib.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjslibcw.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjsnativ.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjssupuilib.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjsvwaux.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjswfc.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjswfccw.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vjswfchtml.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="tconn50.dll" />
+    <Content Include="tedm50.dll" />
+    <Content Include="TIBCO.SS.dll" />
+    <Content Include="tipc50.dll" />
+    <Content Include="tipccom.dll" />
+    <Content Include="tipcl50.dll" />
+    <Content Include="tmetal50.dll" />
+    <Content Include="tmsg50.dll" />
+    <Content Include="tsm50.dll" />
+    <Content Include="tsubj50.dll" />
+    <Content Include="tutil50.dll" />
+    <Content Include="vjscor.dll" />
+    <Content Include="vjslib.dll" />
+    <Content Include="vjslibcw.dll" />
+    <Content Include="vjsvwaux.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
