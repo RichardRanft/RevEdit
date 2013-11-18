@@ -66,6 +66,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this.nudRevision = new System.Windows.Forms.NumericUpDown();
             this.bInsertHeader = new System.Windows.Forms.Button();
+            this.lSDKBuildNum = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRevision)).BeginInit();
@@ -311,6 +313,7 @@
             this.bLogin.Text = "Login";
             this.bLogin.UseVisualStyleBackColor = true;
             this.bLogin.Click += new System.EventHandler(this.bLogin_Click);
+            this.bLogin.MouseDown += new System.Windows.Forms.MouseEventHandler(this.bLogin_MouseDown);
             // 
             // bDisconnect
             // 
@@ -420,11 +423,31 @@
             this.bInsertHeader.UseVisualStyleBackColor = true;
             this.bInsertHeader.Click += new System.EventHandler(this.bInsertHeader_Click);
             // 
+            // lSDKBuildNum
+            // 
+            this.lSDKBuildNum.AutoSize = true;
+            this.lSDKBuildNum.Location = new System.Drawing.Point(402, 73);
+            this.lSDKBuildNum.Name = "lSDKBuildNum";
+            this.lSDKBuildNum.Size = new System.Drawing.Size(40, 13);
+            this.lSDKBuildNum.TabIndex = 30;
+            this.lSDKBuildNum.Text = "0.0.0.0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(298, 73);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(98, 13);
+            this.label9.TabIndex = 31;
+            this.label9.Text = "SDK Build Number:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 690);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.lSDKBuildNum);
             this.Controls.Add(this.bInsertHeader);
             this.Controls.Add(this.nudRevision);
             this.Controls.Add(this.label8);
@@ -510,6 +533,8 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown nudRevision;
         private System.Windows.Forms.Button bInsertHeader;
+        private System.Windows.Forms.Label lSDKBuildNum;
+        private System.Windows.Forms.Label label9;
     }
 }
 

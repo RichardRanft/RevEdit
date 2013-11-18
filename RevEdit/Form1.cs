@@ -4,7 +4,6 @@ using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms;
@@ -595,6 +594,11 @@ namespace RevEdit
         {
             String header = getHeaderBlock();
             tbRevisionText.Text = tbRevisionText.Text.Insert(0, header);
+        }
+
+        private void bLogin_MouseDown(object sender, MouseEventArgs e)
+        {
+            lSDKBuildNum.Text = serviceProvider.SDKBuildNumber;
         }
     }
 }

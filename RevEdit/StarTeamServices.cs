@@ -3,11 +3,11 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
 using StarTeam;
+using StarTeam.Exceptions;
 using Type = StarTeam.Type;
 
 namespace RevEdit
@@ -29,6 +29,7 @@ namespace RevEdit
         private string m_strFolder = null;				// Folder path; null searches the root folder
         private bool m_bRecursive = true;				// true if subfolders are searched recursively
         private String m_tempFilePath = Environment.CurrentDirectory;
+        private String m_bnBuildID;
 
         // Item Type Names specified on the command line.
         private StringCollection m_strTypeNames = new StringCollection();
@@ -39,8 +40,7 @@ namespace RevEdit
         private DateTime m_cutoffDate = DateTime.Now;	// List items last modified since this date
         private bool m_bUseDateFilter = false;			// True to filter by m_cuttoffDate
 
-        // Used when writing header information to output.
-        Server m_server;
+        StarTeam.Server m_server;
         File m_revisionFile;
         File m_releaseDataFile;
 
@@ -77,6 +77,15 @@ namespace RevEdit
             set
             {
                 m_strServer = value;
+            }
+        }
+        public String SDKBuildNumber
+        {
+            get
+            {
+                if (m_bnBuildID == null || m_bnBuildID == "")
+                    m_bnBuildID = StarTeam.BuildNumber.BuildString;
+                return m_bnBuildID;
             }
         }
         public String TempFilePath
@@ -159,13 +168,35 @@ namespace RevEdit
 
         # endregion
 
+        private StarTeam.ServerInfo SetServerInfo()
+        {
+            StarTeam.ServerInfo info = new ServerInfo();
+            info.Host = m_strServer;
+            info.Port = m_nPort;
+            info.UserName = m_strUser;
+            info.Password = m_strPassword;
+            return info;
+        }
+
         // Creates a StarTeam server object, connects to the server, and logs in.
         // Returns the resulting Server object.
         public Server GetServer()
         {
             // Simplest constructor, uses default encryption algorithm and compression level.
+            m_bnBuildID = StarTeam.BuildNumber.BuildString;
+
             if (m_server == null)
-                m_server = new Server(m_strServer, m_nPort);
+            {
+                try
+                {
+                    m_server = new Server(SetServerInfo());//new StarTeam.Server(SetServerInfo());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Server Not Initialized");
+                    return null;
+                }
+            }
 
             // Optional; logOn() connects if necessary.
             m_server.Connect();
@@ -179,11 +210,13 @@ namespace RevEdit
         public bool logIn()
         {
             // Create the Server object.
+            m_bnBuildID = StarTeam.BuildNumber.BuildString;
+
             if (m_server == null)
             {
                 try
                 {
-                    m_server = new Server(m_strServer, m_nPort);
+                    m_server = new Server(SetServerInfo());//new StarTeam.Server(SetServerInfo());
                 }
                 catch (Exception ex)
                 {
@@ -191,8 +224,6 @@ namespace RevEdit
                     return false;
                 }
             }
-            if (m_server == null)
-                return false;
 
             // LogOn to the server.
             try
