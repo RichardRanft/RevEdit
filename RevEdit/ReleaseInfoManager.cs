@@ -7,6 +7,14 @@ using System.Windows.Forms;
 
 namespace RevEdit
 {
+    public enum ReleaseStatus
+    {
+        DEVELOPMENT,
+        TESTING,
+        SUBMITTED,
+        APPROVED
+    }
+
     public class ReleaseDataItem
     {
         private String mMarket;
@@ -16,9 +24,21 @@ namespace RevEdit
         private String mReleaseLabel;
         private String mGameName;
         private String mNotes;
+        private ReleaseStatus mStatus;
 
         #region Accessors
 
+        public ReleaseStatus Status
+        {
+            get
+            {
+                return mStatus;
+            }
+            set
+            {
+                mStatus = value;
+            }
+        }
         public String Market
         {
             get
@@ -107,6 +127,7 @@ namespace RevEdit
             mReleaseLabel = "";
             mGameName = "";
             mNotes = "";
+            mStatus = ReleaseStatus.DEVELOPMENT;
         }
     }
 
