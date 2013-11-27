@@ -26,7 +26,7 @@ namespace RevEdit
         private string m_strPassword = "Administrator";	// Logon password
         private string m_strProject = null;				// Project name; null searches all projects
         private string m_strView = null;				// View name; null searches default view
-        private string m_strFolder = null;				// Folder path; null searches the root folder
+        private string m_strFolder = "documents";				// Folder path; null searches the root folder
         private bool m_bRecursive = true;				// true if subfolders are searched recursively
         private String m_tempFilePath = Environment.CurrentDirectory;
         private String m_bnBuildID;
@@ -367,27 +367,26 @@ namespace RevEdit
         public bool checkoutRevisionFile()
         {
             StarTeam.Item revFile;
-            if (getRevisionFile(m_strProject, m_strView, out revFile))
+            StarTeam.View currentView;
+            if (getRevisionFile(m_strProject, m_strView, out currentView, out revFile))
             {
-                Project proj = null;
+                StarTeam.CheckoutOptions opt = new CheckoutOptions(currentView);
+                opt.ForceCheckout = true;
+                opt.SetCheckoutTip();
+                StarTeam.CheckoutManager coManager = currentView.CreateCheckoutManager(opt);
+                m_revisionFile = (StarTeam.File)revFile;
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(m_tempFilePath + @"\revision.txt");
                 try
-                {
-                    proj = m_server.FindProject(m_strProject);
+                {                    
+                    coManager.CheckoutTo(m_revisionFile, fileInfo);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "StarTeam Connection Error", MessageBoxButtons.OK);
+                    MessageBox.Show(ex.Message, "StarTeam Checkout Error", MessageBoxButtons.OK);
                     return false;
                 }
-                StarTeam.View currentView = proj.FindView(m_strView);
-                StarTeam.View view = getRootMarketView(proj, currentView);
-                StarTeam.Folder rootFolder = view.RootFolder;
-                StarTeam.Folder docFolder = rootFolder.FindSubFolder("documents");
-                StarTeam.CheckoutManager coManager = view.CreateCheckoutManager();
-                m_revisionFile = (File)revFile;
-                System.IO.FileInfo fileInfo = new System.IO.FileInfo(m_tempFilePath + @"\revision.txt");
-                coManager.CheckoutTo(m_revisionFile, fileInfo);
-                return true;
+                if (fileInfo.Exists)
+                    return true;
             }
             return false;
         }
@@ -443,10 +442,9 @@ namespace RevEdit
                 return false;
             }
             StarTeam.View currentView = proj.FindView(m_strView);
-            StarTeam.View view = getRootMarketView(proj, currentView);
-            StarTeam.Folder rootFolder = view.RootFolder;
+            StarTeam.Folder rootFolder = currentView.RootFolder;
             StarTeam.Folder docFolder = rootFolder.FindSubFolder("documents");
-            StarTeam.CheckinManager manager = view.CreateCheckinManager();
+            StarTeam.CheckinManager manager = currentView.CreateCheckinManager();
             if (m_revisionFile == null)
             {
                 m_revisionFile = File.Create(docFolder);
@@ -514,25 +512,29 @@ namespace RevEdit
             return false;
         }
 
-        private bool getRevisionFile(String project, String view, out StarTeam.Item item)
+        private bool getRevisionFile(String project, String view, out StarTeam.View stView, out StarTeam.Item item)
         {
             if (project == "" || project == null)
             {
                 item = null;
+                stView = null;
                 return false;
             }
             Project stProject = m_server.FindProject(project);
             if ( view == "" || view == null)
             {
                 item = null;
+                stView = null;
                 return false;
             }
-            StarTeam.View targetView = findView(stProject, view);
+            StarTeam.View targetView = stProject.FindView(view);
             if (targetView == null)
             {
                 item = null;
+                stView = null;
                 return false;
             }
+            stView = targetView;
             item = FindInView(m_server, stProject, targetView, "revision.txt");
             if (item != null)
                 return true;

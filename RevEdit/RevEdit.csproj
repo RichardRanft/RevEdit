@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RevEdit</RootNamespace>
     <AssemblyName>RevEdit</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -71,6 +71,12 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharpSvn">
+      <HintPath>.\SharpSvn.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpSvn.UI">
+      <HintPath>.\SharpSvn.UI.dll</HintPath>
+    </Reference>
     <Reference Include="StarTeam, Version=13.0.0.32, Culture=neutral, PublicKeyToken=6467016da958242f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\StarTeam\13.0.0.32__6467016da958242f\StarTeam.dll</HintPath>
@@ -83,7 +89,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -117,6 +122,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReleaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReleaseForm.Designer.cs">
+      <DependentUpon>ReleaseForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ReleaseInfoManager.cs" />
     <Compile Include="Settings.cs">
       <SubType>Form</SubType>
@@ -125,6 +136,7 @@
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
     <Compile Include="StarTeamServices.cs" />
+    <Compile Include="SVNServices.cs" />
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>
@@ -147,6 +159,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ReleaseForm.resx">
+      <DependentUpon>ReleaseForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
@@ -167,21 +182,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Documentation\DesignNotes.txt" />
-    <Content Include="tconn50.dll" />
-    <Content Include="tedm50.dll" />
-    <Content Include="TIBCO.SS.dll" />
-    <Content Include="tipc50.dll" />
-    <Content Include="tipccom.dll" />
-    <Content Include="tipcl50.dll" />
-    <Content Include="tmetal50.dll" />
-    <Content Include="tmsg50.dll" />
-    <Content Include="tsm50.dll" />
-    <Content Include="tsubj50.dll" />
-    <Content Include="tutil50.dll" />
-    <Content Include="vjscor.dll" />
-    <Content Include="vjslib.dll" />
-    <Content Include="vjslibcw.dll" />
-    <Content Include="vjsvwaux.dll" />
+    <Content Include="TIBCO.SS.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="vjscor.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="vjslib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="vjslibcw.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="vjsvwaux.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

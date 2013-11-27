@@ -44,15 +44,15 @@
             this.bBrowse = new System.Windows.Forms.Button();
             this.fbdBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.bImport = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.cbMarket = new System.Windows.Forms.ComboBox();
-            this.tbReleaseVersion = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.bRelease = new System.Windows.Forms.Button();
             this.dtpReleaseDate = new System.Windows.Forms.DateTimePicker();
-            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.lReleasedLabel = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.tbReleaseVersion = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cbMarket = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -194,51 +194,6 @@
             this.bImport.UseVisualStyleBackColor = true;
             this.bImport.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(407, 9);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(40, 13);
-            this.label6.TabIndex = 13;
-            this.label6.Text = "Market";
-            // 
-            // cbMarket
-            // 
-            this.cbMarket.FormattingEnabled = true;
-            this.cbMarket.Location = new System.Drawing.Point(410, 29);
-            this.cbMarket.Name = "cbMarket";
-            this.cbMarket.Size = new System.Drawing.Size(228, 21);
-            this.cbMarket.Sorted = true;
-            this.cbMarket.TabIndex = 14;
-            this.cbMarket.SelectedIndexChanged += new System.EventHandler(this.cbMarket_SelectedIndexChanged);
-            // 
-            // tbReleaseVersion
-            // 
-            this.tbReleaseVersion.Location = new System.Drawing.Point(410, 70);
-            this.tbReleaseVersion.Name = "tbReleaseVersion";
-            this.tbReleaseVersion.Size = new System.Drawing.Size(142, 20);
-            this.tbReleaseVersion.TabIndex = 15;
-            this.tbReleaseVersion.Text = "N/A";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(407, 53);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(90, 13);
-            this.label7.TabIndex = 16;
-            this.label7.Text = "Released Version";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(407, 110);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(78, 13);
-            this.label8.TabIndex = 18;
-            this.label8.Text = "Released Date";
-            // 
             // bRelease
             // 
             this.bRelease.Enabled = false;
@@ -257,14 +212,14 @@
             this.dtpReleaseDate.Size = new System.Drawing.Size(228, 20);
             this.dtpReleaseDate.TabIndex = 20;
             // 
-            // label9
+            // label8
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(407, 93);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(84, 13);
-            this.label9.TabIndex = 21;
-            this.label9.Text = "Released Label:";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(407, 110);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(78, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Released Date";
             // 
             // lReleasedLabel
             // 
@@ -274,6 +229,51 @@
             this.lReleasedLabel.Size = new System.Drawing.Size(41, 13);
             this.lReleasedLabel.TabIndex = 22;
             this.lReleasedLabel.Text = "label10";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(407, 93);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(84, 13);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "Released Label:";
+            // 
+            // tbReleaseVersion
+            // 
+            this.tbReleaseVersion.Location = new System.Drawing.Point(410, 70);
+            this.tbReleaseVersion.Name = "tbReleaseVersion";
+            this.tbReleaseVersion.Size = new System.Drawing.Size(142, 20);
+            this.tbReleaseVersion.TabIndex = 15;
+            this.tbReleaseVersion.Text = "N/A";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(407, 53);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(90, 13);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "Released Version";
+            // 
+            // cbMarket
+            // 
+            this.cbMarket.FormattingEnabled = true;
+            this.cbMarket.Location = new System.Drawing.Point(410, 29);
+            this.cbMarket.Name = "cbMarket";
+            this.cbMarket.Size = new System.Drawing.Size(228, 21);
+            this.cbMarket.Sorted = true;
+            this.cbMarket.TabIndex = 14;
+            this.cbMarket.SelectedIndexChanged += new System.EventHandler(this.cbMarket_SelectedIndexChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(407, 9);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(40, 13);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "Market";
             // 
             // ModDocForm
             // 
@@ -331,14 +331,14 @@
         private System.Windows.Forms.Button bBrowse;
         private System.Windows.Forms.FolderBrowserDialog fbdBrowser;
         private System.Windows.Forms.Button bImport;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox cbMarket;
-        private System.Windows.Forms.TextBox tbReleaseVersion;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button bRelease;
         private System.Windows.Forms.DateTimePicker dtpReleaseDate;
-        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label lReleasedLabel;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox tbReleaseVersion;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cbMarket;
+        private System.Windows.Forms.Label label6;
     }
 }

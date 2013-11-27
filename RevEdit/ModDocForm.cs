@@ -22,6 +22,7 @@ namespace RevEdit
         private List<String> mSigFileData;
         private List<String> mRevisionData;
         private ReleaseInfoManager mReleaseManager;
+        private ReleaseForm mReleaseForm;
 
         #region Accessors
 
@@ -76,6 +77,8 @@ namespace RevEdit
             mSigFileData = new List<string>();
             mRevisionData = new List<string>();
             mReleaseManager = new ReleaseInfoManager();
+            mReleaseForm = new ReleaseForm();
+            mReleaseForm.DataManager = mReleaseManager;
         }
 
         private void bBrowse_Click(object sender, EventArgs e)
@@ -221,7 +224,6 @@ namespace RevEdit
             bImport.Enabled = false;
             mReleaseManager.Read();
             updateMarkets();
-            lReleasedLabel.Text = mLastLabel;
         }
 
         private void updateMarkets()
@@ -243,13 +245,47 @@ namespace RevEdit
             }
         }
 
+        private void updateMarkets(String gameName)
+        {
+            cbMarket.Items.Clear();
+            foreach (ReleaseDataItem item in mReleaseManager.Items)
+            {
+                bool itemFound = false;
+                foreach (String entry in cbMarket.Items)
+                {
+                    if (item.Market == entry && item.GameName == gameName)
+                    {
+                        itemFound = true;
+                        break;
+                    }
+                }
+                if (!itemFound)
+                    cbMarket.Items.Add(item.Market);
+            }
+        }
+
         private void bRelease_Click(object sender, EventArgs e)
         {
             tbReleaseVersion.Text = tbCurrentVersion.Text;
             lReleasedLabel.Text = mLastLabel;
-            if (!mReleaseManager.Release(cbMarket.Text, tbReleaseVersion.Text, lReleasedLabel.Text, tbCurrentPlatform.Text, dtpReleaseDate.Value.ToString()))
+            dtpReleaseDate.Value = DateTime.Now;
+
+            mReleaseForm.GameName = tbName.Text;
+            mReleaseForm.Platform = tbCurrentPlatform.Text;
+            mReleaseForm.Version = tbCurrentVersion.Text;
+            mReleaseForm.Market = cbMarket.Text;
+            mReleaseForm.Label = mLastLabel;
+            mReleaseForm.Date = dtpReleaseDate.Text;
+            if (mReleaseForm.ShowDialog() == DialogResult.OK)
             {
-                MessageBox.Show("Release information is incomplete.  Cannot create release log entry from the data provided.", "Release Error", MessageBoxButtons.OK);
+                // if the release manager can't add the release data bail out.
+                if (!mReleaseManager.Release(mReleaseForm.Market,
+                    mReleaseForm.GameName,
+                    mReleaseForm.Version,
+                    mReleaseForm.Label,
+                    mReleaseForm.Platform,
+                    mReleaseForm.Date,
+                    mReleaseForm.ReleaseNotes))
                 return;
             }
             mReleaseManager.Write();
@@ -266,14 +302,15 @@ namespace RevEdit
 
         private void refreshReleaseData()
         {
-            foreach (ReleaseDataItem item in mReleaseManager.Items)
+            ReleaseDataItem item = mReleaseManager.GetLatestRevision(tbName.Text, cbMarket.Text);
+            if (item != null)
             {
-                if (cbMarket.Text == item.Market)
-                {
-                    tbReleaseVersion.Text = item.Version;
-                    lReleasedLabel.Text = item.ReleaseLabel;
-                }
+                tbReleaseVersion.Text = item.Version;
+                lReleasedLabel.Text = item.ReleaseLabel;
+                return;
             }
+            tbReleaseVersion.Text = "";
+            lReleasedLabel.Text = "";
         }
     }
 }

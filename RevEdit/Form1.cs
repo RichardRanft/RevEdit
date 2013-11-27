@@ -14,11 +14,12 @@ namespace RevEdit
 {
     public partial class MainForm : Form
     {
+        private StarTeamServices stProvider;
+        private SVNServices svnProvider;
         private String currentLine;
         private About aboutBox;
         private Settings settingsBox;
         private CheckinForm checkinForm;
-        private StarTeamServices serviceProvider;
         private int mRevision;
         private List<String> mServerList;
         private List<String> mAddressList;
@@ -41,10 +42,11 @@ namespace RevEdit
             settingsBox = new Settings();
             checkinForm = new CheckinForm();
             mModDocForm = new ModDocForm();
-            serviceProvider = new StarTeamServices();
+            stProvider = new StarTeamServices();
             mServerList = new List<String>();
             mAddressList = new List<String>();
             mPortList = new List<int>();
+            bSvnLogout.Enabled = false;
 
             initialize();
         }
@@ -68,20 +70,20 @@ namespace RevEdit
 
         private bool login()
         {
-            serviceProvider.User = settingsBox.User;
-            serviceProvider.Password = settingsBox.Password;
-            serviceProvider.TempFilePath = settingsBox.Path;
+            stProvider.User = settingsBox.User;
+            stProvider.Password = settingsBox.Password;
+            stProvider.TempFilePath = settingsBox.Path;
             int serverIndex = getServerByName("PC4 EGM");
             if (serverIndex >= 0)
             {
-                serviceProvider.Server = mAddressList[serverIndex];
-                serviceProvider.Port = mPortList[serverIndex];
+                stProvider.Server = mAddressList[serverIndex];
+                stProvider.Port = mPortList[serverIndex];
             }
             else
                 return false;
-            if (!serviceProvider.logIn())
+            if (!stProvider.logIn())
                 return false;
-            List<String> list = serviceProvider.getProjectList();
+            List<String> list = stProvider.getProjectList();
             list.Sort();
             foreach (String projectName in list)
             {
@@ -137,7 +139,7 @@ namespace RevEdit
                                         {
                                             port = Convert.ToInt32(reader.Value);
                                         }
-                                        catch (Exception ex)
+                                        catch (Exception)
                                         {
                                             port = 0;
                                         }
@@ -247,7 +249,7 @@ namespace RevEdit
             bDisconnect.Enabled = false;
             bLogin.Enabled = true;
 
-            serviceProvider.disconnect();
+            stProvider.disconnect();
 
             cleanupTempFiles();
 
@@ -256,8 +258,9 @@ namespace RevEdit
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            serviceProvider.disconnect();
+            stProvider.disconnect();
             cleanupTempFiles();
+            cleanupReleaseData();
         }
 
         private void cleanupTempFiles()
@@ -265,18 +268,22 @@ namespace RevEdit
             System.IO.FileInfo info = new FileInfo(settingsBox.Path + @"\revision.txt");
             if (info.Exists)
                 info.Delete();
-            info = new FileInfo(settingsBox.Path + @"\releasedata.xml");
+        }
+
+        private void cleanupReleaseData()
+        {
+            System.IO.FileInfo info = new FileInfo(settingsBox.Path + @"\releasedata.xml");
             if (info.Exists)
                 info.Delete();
         }
 
         private void cbProjectList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            serviceProvider.clearRevisionFile();
+            stProvider.clearRevisionFile();
             cbViewList.Items.Clear();
             cbViewList.Text = "Select a view...";
-            serviceProvider.Project = cbProjectList.Text;
-            List<String> list = serviceProvider.getViewList(cbProjectList.SelectedItem.ToString());
+            stProvider.Project = cbProjectList.Text;
+            List<String> list = stProvider.getViewList(cbProjectList.SelectedItem.ToString());
             foreach (String view in list)
             {
                 cbViewList.Items.Add(view);
@@ -294,8 +301,8 @@ namespace RevEdit
             cbEndLabelList.Items.Clear();
             cbEndLabelList.Text = "";
             String viewName = cbViewList.SelectedItem.ToString().Trim();
-            serviceProvider.View = viewName;
-            List<String> list = serviceProvider.getLabelList(cbProjectList.SelectedItem.ToString(), viewName);
+            stProvider.View = viewName;
+            List<String> list = stProvider.getLabelList(cbProjectList.SelectedItem.ToString(), viewName);
             foreach (String label in list)
             {
                 cbStartLabelList.Items.Add(label);
@@ -339,7 +346,7 @@ namespace RevEdit
             {
                 version = System.Convert.ToInt32(verNum);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             return ++version;
@@ -348,7 +355,7 @@ namespace RevEdit
         private void findRevisionFile()
         {
             tbRevisionText.Clear();
-            if (serviceProvider.checkoutRevisionFile())
+            if (stProvider.checkoutRevisionFile())
             {
                 toolStripStatusLabel2.Text = "Revision.txt found";
                 readFile();
@@ -361,7 +368,7 @@ namespace RevEdit
 
         private void findReleaseDataFile()
         {
-            serviceProvider.checkoutReleaseDataFile();
+            stProvider.checkoutReleaseDataFile();
         }
 
         private void readFile()
@@ -398,8 +405,6 @@ namespace RevEdit
             toolStripStatusLabel2.Text = "Searching...";
             // Get the revision.txt file for the selected game/view
             findRevisionFile();
-            // Get the releasedata.xml file for the selected game/view
-            findReleaseDataFile();
             // Focus the text editing area
             tbRevisionText.Focus();
         }
@@ -408,7 +413,7 @@ namespace RevEdit
         {
             wrapText();
             writeFile();
-            if (!serviceProvider.checkinRevisionFile(settingsBox.Path + @"\revision.txt"))
+            if (!stProvider.checkinRevisionFile(settingsBox.Path + @"\revision.txt"))
             {
                 toolStripStatusLabel2.Text = "File not checked in.";
                 return;
@@ -417,7 +422,7 @@ namespace RevEdit
             {
                 if (checkinForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    serviceProvider.createLabel(tbNewLabel.Text, checkinForm.Comment);
+                    stProvider.createLabel(tbNewLabel.Text, checkinForm.Comment);
                     toolStripStatusLabel2.Text = "Checked in and label " + tbNewLabel.Text + " created.";
                 }
                 else
@@ -428,7 +433,15 @@ namespace RevEdit
             }
             else
                 toolStripStatusLabel2.Text = "Checked in.";
-            serviceProvider.checkinReleaseDataFile(settingsBox.Path + @"\releasedata.xml");
+            if (!svnProvider.Commit())
+            {
+                svnProvider.Login();
+                if (!svnProvider.Commit())
+                {
+                    MessageBox.Show("Unable to commit updates to the release data file.", "Release Data Commit Failure", MessageBoxButtons.OK);
+                    return;
+                }
+            }
         }
 
         private void cbCreateLabel_CheckedChanged(object sender, EventArgs e)
@@ -598,7 +611,37 @@ namespace RevEdit
 
         private void bLogin_MouseDown(object sender, MouseEventArgs e)
         {
-            lSDKBuildNum.Text = serviceProvider.SDKBuildNumber;
+            lSDKBuildNum.Text = stProvider.SDKBuildNumber;
+        }
+
+        private void bSvnConnect_Click(object sender, EventArgs e)
+        {
+            if (svnProvider == null)
+            {
+                svnProvider = new SVNServices();
+            }
+            svnProvider.UserName = settingsBox.SvnUser;
+            svnProvider.Password = settingsBox.SvnPassword;
+            svnProvider.LocalPath = settingsBox.Path;
+            svnProvider.ParentForm = this;
+            if (svnProvider.Login())
+            {
+                label11.Text = svnProvider.Repository;
+                svnProvider.Update();
+                bSvnConnect.Enabled = false;
+                bSvnLogout.Enabled = true;
+            }
+        }
+
+        private void bSvnLogout_Click(object sender, EventArgs e)
+        {
+            if (svnProvider == null)
+                return;
+            svnProvider.Commit();
+            svnProvider.Disconnect();
+            label11.Text = "";
+            bSvnLogout.Enabled = false;
+            bSvnConnect.Enabled = true;
         }
     }
 }

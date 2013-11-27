@@ -42,11 +42,18 @@
             this.label3 = new System.Windows.Forms.Label();
             this.folderBrowseDlg = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.tbAuthor = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.cbSVNAutoLogin = new System.Windows.Forms.CheckBox();
+            this.tbSVNPassword = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbSVNUserName = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbAutoLogin
@@ -131,7 +138,7 @@
             this.groupBox2.Controls.Add(this.tbTempPath);
             this.groupBox2.Controls.Add(this.bTempBrowse);
             this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Location = new System.Drawing.Point(244, 12);
+            this.groupBox2.Location = new System.Drawing.Point(243, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(232, 127);
             this.groupBox2.TabIndex = 8;
@@ -168,12 +175,19 @@
             // 
             this.groupBox3.Controls.Add(this.tbAuthor);
             this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Location = new System.Drawing.Point(13, 146);
+            this.groupBox3.Location = new System.Drawing.Point(243, 148);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(224, 100);
+            this.groupBox3.Size = new System.Drawing.Size(232, 100);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Author";
+            // 
+            // tbAuthor
+            // 
+            this.tbAuthor.Location = new System.Drawing.Point(7, 37);
+            this.tbAuthor.Name = "tbAuthor";
+            this.tbAuthor.Size = new System.Drawing.Size(211, 20);
+            this.tbAuthor.TabIndex = 1;
             // 
             // label4
             // 
@@ -184,18 +198,68 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Name";
             // 
-            // tbAuthor
+            // groupBox4
             // 
-            this.tbAuthor.Location = new System.Drawing.Point(7, 37);
-            this.tbAuthor.Name = "tbAuthor";
-            this.tbAuthor.Size = new System.Drawing.Size(211, 20);
-            this.tbAuthor.TabIndex = 1;
+            this.groupBox4.Controls.Add(this.cbSVNAutoLogin);
+            this.groupBox4.Controls.Add(this.tbSVNPassword);
+            this.groupBox4.Controls.Add(this.label5);
+            this.groupBox4.Controls.Add(this.label6);
+            this.groupBox4.Controls.Add(this.tbSVNUserName);
+            this.groupBox4.Location = new System.Drawing.Point(12, 138);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(225, 127);
+            this.groupBox4.TabIndex = 6;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Subversion";
+            // 
+            // cbSVNAutoLogin
+            // 
+            this.cbSVNAutoLogin.AutoSize = true;
+            this.cbSVNAutoLogin.Location = new System.Drawing.Point(6, 19);
+            this.cbSVNAutoLogin.Name = "cbSVNAutoLogin";
+            this.cbSVNAutoLogin.Size = new System.Drawing.Size(119, 17);
+            this.cbSVNAutoLogin.TabIndex = 0;
+            this.cbSVNAutoLogin.Text = "Log in automatically";
+            this.cbSVNAutoLogin.UseVisualStyleBackColor = true;
+            // 
+            // tbSVNPassword
+            // 
+            this.tbSVNPassword.Location = new System.Drawing.Point(6, 100);
+            this.tbSVNPassword.Name = "tbSVNPassword";
+            this.tbSVNPassword.Size = new System.Drawing.Size(213, 20);
+            this.tbSVNPassword.TabIndex = 4;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 43);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(60, 13);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "User Name";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 83);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 13);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Password";
+            // 
+            // tbSVNUserName
+            // 
+            this.tbSVNUserName.Location = new System.Drawing.Point(6, 60);
+            this.tbSVNUserName.Name = "tbSVNUserName";
+            this.tbSVNUserName.Size = new System.Drawing.Size(213, 20);
+            this.tbSVNUserName.TabIndex = 2;
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(488, 289);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.bOK);
@@ -209,6 +273,8 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -231,5 +297,11 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox tbAuthor;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.CheckBox cbSVNAutoLogin;
+        private System.Windows.Forms.TextBox tbSVNPassword;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tbSVNUserName;
     }
 }

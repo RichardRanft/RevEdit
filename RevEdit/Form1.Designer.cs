@@ -68,6 +68,10 @@
             this.bInsertHeader = new System.Windows.Forms.Button();
             this.lSDKBuildNum = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.bSvnConnect = new System.Windows.Forms.Button();
+            this.bSvnLogout = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRevision)).BeginInit();
@@ -441,11 +445,52 @@
             this.label9.TabIndex = 31;
             this.label9.Text = "SDK Build Number:";
             // 
+            // bSvnConnect
+            // 
+            this.bSvnConnect.Location = new System.Drawing.Point(459, 43);
+            this.bSvnConnect.Name = "bSvnConnect";
+            this.bSvnConnect.Size = new System.Drawing.Size(75, 23);
+            this.bSvnConnect.TabIndex = 32;
+            this.bSvnConnect.Text = "svnLogin";
+            this.bSvnConnect.UseVisualStyleBackColor = true;
+            this.bSvnConnect.Click += new System.EventHandler(this.bSvnConnect_Click);
+            // 
+            // bSvnLogout
+            // 
+            this.bSvnLogout.Location = new System.Drawing.Point(540, 43);
+            this.bSvnLogout.Name = "bSvnLogout";
+            this.bSvnLogout.Size = new System.Drawing.Size(75, 23);
+            this.bSvnLogout.TabIndex = 33;
+            this.bSvnLogout.Text = "svnLogout";
+            this.bSvnLogout.UseVisualStyleBackColor = true;
+            this.bSvnLogout.Click += new System.EventHandler(this.bSvnLogout_Click);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(298, 93);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(65, 13);
+            this.label10.TabIndex = 35;
+            this.label10.Text = "SVN Status:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(369, 93);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(0, 13);
+            this.label11.TabIndex = 34;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 690);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.bSvnLogout);
+            this.Controls.Add(this.bSvnConnect);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.lSDKBuildNum);
             this.Controls.Add(this.bInsertHeader);
@@ -535,6 +580,10 @@
         private System.Windows.Forms.Button bInsertHeader;
         private System.Windows.Forms.Label lSDKBuildNum;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button bSvnConnect;
+        private System.Windows.Forms.Button bSvnLogout;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
     }
 }
 

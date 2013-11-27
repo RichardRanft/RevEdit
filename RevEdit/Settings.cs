@@ -11,11 +11,14 @@ namespace RevEdit
 {
     public partial class Settings : Form
     {
-        private String m_strUser;
-        private String m_strPassword;
+        private String m_strStUser;
+        private String m_strStPassword;
+        private String m_strSvnUser;
+        private String m_strSvnPassword;
         private String m_strTempPath;
         private String m_strAuthor;
         private bool m_boolAutoLogin;
+        private bool m_boolSVNAutoLogin;
         private RegistryKey m_keyCurrentUser;
         private RegistryKey m_keySettings;
 
@@ -32,14 +35,28 @@ namespace RevEdit
         {
             get
             {
-                return m_strUser;
+                return m_strStUser;
             }
         }
         public String Password
         {
             get
             {
-                return m_strPassword;
+                return m_strStPassword;
+            }
+        }
+        public String SvnUser
+        {
+            get
+            {
+                return m_strSvnUser;
+            }
+        }
+        public String SvnPassword
+        {
+            get
+            {
+                return m_strSvnPassword;
             }
         }
         public String Path
@@ -54,6 +71,13 @@ namespace RevEdit
             get
             {
                 return m_boolAutoLogin;
+            }
+        }
+        public bool SvnAutoLogin
+        {
+            get
+            {
+                return m_boolSVNAutoLogin;
             }
         }
 
@@ -114,17 +138,32 @@ namespace RevEdit
             if (m_keySettings.GetValue("UserName") != null)
             {
                 tbUserName.Text = m_keySettings.GetValue("UserName").ToString();
-                m_strUser = tbUserName.Text;
+                m_strStUser = tbUserName.Text;
             }
             if (m_keySettings.GetValue("Password") != null)
             {
                 tbPassword.Text = m_keySettings.GetValue("Password").ToString();
-                m_strPassword = tbPassword.Text;
+                m_strStPassword = tbPassword.Text;
+            }
+            if (m_keySettings.GetValue("SVNUserName") != null)
+            {
+                tbSVNUserName.Text = m_keySettings.GetValue("SVNUserName").ToString();
+                m_strSvnUser = tbSVNUserName.Text;
+            }
+            if (m_keySettings.GetValue("SVNPassword") != null)
+            {
+                tbSVNPassword.Text = m_keySettings.GetValue("SVNPassword").ToString();
+                m_strSvnPassword = tbSVNPassword.Text;
             }
             if (m_keySettings.GetValue("AutoLogin") != null)
             {
                 cbAutoLogin.Checked = Convert.ToBoolean(m_keySettings.GetValue("AutoLogin").ToString());
                 m_boolAutoLogin = cbAutoLogin.Checked;
+            }
+            if (m_keySettings.GetValue("SVNAutoLogin") != null)
+            {
+                cbSVNAutoLogin.Checked = Convert.ToBoolean(m_keySettings.GetValue("SVNAutoLogin").ToString());
+                m_boolSVNAutoLogin = cbSVNAutoLogin.Checked;
             }
         }
 
@@ -135,11 +174,17 @@ namespace RevEdit
             m_keySettings.SetValue("TempFolder", tbTempPath.Text);
             m_strTempPath = tbTempPath.Text;
             m_keySettings.SetValue("UserName", tbUserName.Text);
-            m_strUser = tbUserName.Text;
+            m_strStUser = tbUserName.Text;
             m_keySettings.SetValue("Password", tbPassword.Text);
-            m_strPassword = tbPassword.Text;
+            m_strStPassword = tbPassword.Text;
+            m_keySettings.SetValue("SVNUserName", tbSVNUserName.Text);
+            m_strSvnUser = tbSVNUserName.Text;
+            m_keySettings.SetValue("SVNPassword", tbSVNPassword.Text);
+            m_strSvnPassword = tbSVNPassword.Text;
             m_keySettings.SetValue("AutoLogin", cbAutoLogin.Checked.ToString());
             m_boolAutoLogin = cbAutoLogin.Checked;
+            m_keySettings.SetValue("SVNAutoLogin", cbSVNAutoLogin.Checked.ToString());
+            m_boolSVNAutoLogin = cbSVNAutoLogin.Checked;
         }
     }
 }
