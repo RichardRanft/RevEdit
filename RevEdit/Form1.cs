@@ -46,7 +46,6 @@ namespace RevEdit
             mServerList = new List<String>();
             mAddressList = new List<String>();
             mPortList = new List<int>();
-            bSvnLogout.Enabled = false;
             svnProvider = new SVNServices();
 
             initialize();
@@ -84,8 +83,6 @@ namespace RevEdit
             {
                 label11.Text = svnProvider.Repository;
                 svnProvider.Update();
-                bSvnConnect.Enabled = false;
-                bSvnLogout.Enabled = true;
             }
 
             // log in to the StarTeam server and get the projects on the server
@@ -264,8 +261,6 @@ namespace RevEdit
             svnProvider.Commit();
             svnProvider.Disconnect();
             label11.Text = "";
-            bSvnLogout.Enabled = false;
-            bSvnConnect.Enabled = true;
 
             cbProjectList.Enabled = false;
             cbViewList.Enabled = false;
@@ -655,8 +650,6 @@ namespace RevEdit
             {
                 label11.Text = svnProvider.Repository;
                 svnProvider.Update();
-                bSvnConnect.Enabled = false;
-                bSvnLogout.Enabled = true;
             }
         }
 
@@ -667,8 +660,6 @@ namespace RevEdit
             svnProvider.Commit();
             svnProvider.Disconnect();
             label11.Text = "";
-            bSvnLogout.Enabled = false;
-            bSvnConnect.Enabled = true;
         }
     }
 }
