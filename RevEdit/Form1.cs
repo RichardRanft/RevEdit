@@ -47,6 +47,7 @@ namespace RevEdit
             mAddressList = new List<String>();
             mPortList = new List<int>();
             bSvnLogout.Enabled = false;
+            svnProvider = new SVNServices();
 
             initialize();
         }
@@ -70,6 +71,24 @@ namespace RevEdit
 
         private bool login()
         {
+            // log in to the Subversion server and get the releasedata.xml file
+            if (svnProvider == null)
+            {
+                svnProvider = new SVNServices();
+            }
+            svnProvider.UserName = settingsBox.SvnUser;
+            svnProvider.Password = settingsBox.SvnPassword;
+            svnProvider.LocalPath = settingsBox.Path;
+            svnProvider.ParentForm = this;
+            if (svnProvider.Login())
+            {
+                label11.Text = svnProvider.Repository;
+                svnProvider.Update();
+                bSvnConnect.Enabled = false;
+                bSvnLogout.Enabled = true;
+            }
+
+            // log in to the StarTeam server and get the projects on the server
             stProvider.User = settingsBox.User;
             stProvider.Password = settingsBox.Password;
             stProvider.TempFilePath = settingsBox.Path;
@@ -240,6 +259,14 @@ namespace RevEdit
 
         private void bDisconnect_Click(object sender, EventArgs e)
         {
+            if (svnProvider == null)
+                return;
+            svnProvider.Commit();
+            svnProvider.Disconnect();
+            label11.Text = "";
+            bSvnLogout.Enabled = false;
+            bSvnConnect.Enabled = true;
+
             cbProjectList.Enabled = false;
             cbViewList.Enabled = false;
             cbStartLabelList.Enabled = false;

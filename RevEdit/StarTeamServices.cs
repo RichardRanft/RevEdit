@@ -379,6 +379,14 @@ namespace RevEdit
                 try
                 {                    
                     coManager.CheckoutTo(m_revisionFile, fileInfo);
+                    StarTeam.File[] commitResults;
+
+                    commitResults = coManager.Commit();
+
+                    if (commitResults[0].IsWorkingFileAvailable == true)
+                    {
+                        return true;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -454,6 +462,7 @@ namespace RevEdit
             try
             {
                 manager.CheckinFrom(m_revisionFile, revFile);
+                manager.Commit();
             }
             catch (Exception ex)
             {
