@@ -253,7 +253,7 @@ namespace RevEdit
                 bool itemFound = false;
                 foreach (String entry in cbMarket.Items)
                 {
-                    if (item.Market == entry && item.GameName == gameName)
+                    if (item.Market == entry && item.SoftwareName == gameName)
                     {
                         itemFound = true;
                         break;

@@ -9,6 +9,7 @@ namespace RevEdit
 {
     public enum ReleaseStatus
     {
+        NONE,
         DEVELOPMENT,
         TESTING,
         SUBMITTED,
@@ -22,12 +23,48 @@ namespace RevEdit
         private String mPlatform;
         private String mReleaseDate;
         private String mReleaseLabel;
-        private String mGameName;
+        private String mSoftwareName;
         private String mNotes;
+        private String mSha1;
+        private String mHMAC;
+        private bool mIsPlatform;
         private ReleaseStatus mStatus;
 
         #region Accessors
 
+        public String SHA1
+        {
+            get
+            {
+                return mSha1;
+            }
+            set
+            {
+                mSha1 = value;
+            }
+        }
+        public String HMAC
+        {
+            get
+            {
+                return mHMAC;
+            }
+            set
+            {
+                mHMAC = value;
+            }
+        }
+        public bool IsPlatform
+        {
+            get
+            {
+                return mIsPlatform;
+            }
+            set
+            {
+                mIsPlatform = value;
+            }
+        }
         public ReleaseStatus Status
         {
             get
@@ -94,15 +131,15 @@ namespace RevEdit
                 mReleaseLabel = value;
             }
         }
-        public String GameName
+        public String SoftwareName
         {
             get
             {
-                return mGameName;
+                return mSoftwareName;
             }
             set
             {
-                mGameName = value;
+                mSoftwareName = value;
             }
         }
         public String Notes
@@ -125,9 +162,36 @@ namespace RevEdit
             mPlatform = "";
             mReleaseDate = "";
             mReleaseLabel = "";
-            mGameName = "";
+            mSoftwareName = "";
             mNotes = "";
-            mStatus = ReleaseStatus.DEVELOPMENT;
+            mSha1 = "";
+            mHMAC = "";
+            mIsPlatform = false;
+            mStatus = ReleaseStatus.NONE;
+        }
+
+        public int GetStatus()
+        {
+            int state = 0;
+            switch (Status)
+            {
+                case ReleaseStatus.NONE:
+                    state = 0;
+                    break;
+                case ReleaseStatus.DEVELOPMENT:
+                    state = 1;
+                    break;
+                case ReleaseStatus.TESTING:
+                    state = 2;
+                    break;
+                case ReleaseStatus.SUBMITTED:
+                    state = 3;
+                    break;
+                case ReleaseStatus.APPROVED:
+                    state = 4;
+                    break;
+            }
+            return state;
         }
     }
 
@@ -175,7 +239,7 @@ namespace RevEdit
             mReleaseData = new List<ReleaseDataItem>();
             mDataLoaded = false;
         }
-        
+
         public ReleaseInfoManager(String Path)
         {
             mFilePath = Path + @"\releasedata.xml";
@@ -188,7 +252,7 @@ namespace RevEdit
             ReleaseDataItem found = null;
             foreach (ReleaseDataItem item in mReleaseData)
             {
-                if (item.GameName == name && item.Market == market)
+                if (item.SoftwareName == name && item.Market == market)
                 {
                     if (found == null)
                     {
@@ -200,6 +264,233 @@ namespace RevEdit
                 }
             }
             return found;
+        }
+
+        public List<String> GetAllPlatforms()
+        {
+            List<String> temp = new List<String>();
+            String platform = "";
+            bool found = false;
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                found = false;
+                platform = item.Platform;
+                foreach (String p in temp)
+                {
+                    if (String.Compare(platform, p) == 0)
+                        found = true;
+                }
+                if (!found)
+                    temp.Add(platform);
+            }
+            return temp;
+        }
+
+        public List<String> GetAllPlatformsByGame(String name)
+        {
+            List<String> temp = new List<String>();
+            String platform = "";
+            bool found = false;
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.SoftwareName == name)
+                {
+                    found = false;
+                    platform = item.Platform;
+                    foreach (String p in temp)
+                    {
+                        if (String.Compare(platform, p) == 0)
+                            found = true;
+                    }
+                    if (!found)
+                        temp.Add(platform);
+                }
+            }
+            return temp;
+        }
+
+        public List<String> GetAllMarkets()
+        {
+            List<String> temp = new List<String>();
+            String market = "";
+            bool found = false;
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                found = false;
+                market = item.Market;
+                foreach (String m in temp)
+                {
+                    if (String.Compare(market, m) == 0)
+                        found = true;
+                }
+                if (!found)
+                    temp.Add(market);
+            }
+            return temp;
+        }
+
+        public List<String> GetAllMarketsByGame(String name)
+        {
+            List<String> temp = new List<String>();
+            String market = "";
+            bool found = false;
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.SoftwareName == name)
+                {
+                    found = false;
+                    market = item.Market;
+                    foreach (String m in temp)
+                    {
+                        if (String.Compare(market, m) == 0)
+                            found = true;
+                    }
+                    if (!found)
+                        temp.Add(market);
+                }
+            }
+            return temp;
+        }
+
+        public List<String> GetAllTitles()
+        {
+            List<String> temp = new List<String>();
+            String title = "";
+            bool found = false;
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                found = false;
+                title = item.SoftwareName;
+                foreach (String t in temp)
+                {
+                    if (String.Compare(title, t) == 0)
+                        found = true;
+                }
+                if (!found)
+                    temp.Add(title);
+            }
+            return temp;
+        }
+
+        public List<String> GetAllVersionsByTitle(String name)
+        {
+            List<String> temp = new List<String>();
+            String version = "";
+            bool found = false;
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.SoftwareName == name)
+                {
+                    found = false;
+                    version = item.Version;
+                    foreach (String t in temp)
+                    {
+                        if (String.Compare(version, t) == 0)
+                            found = true;
+                    }
+                    if (!found)
+                        temp.Add(version);
+                }
+            }
+            return temp;
+        }
+
+        public bool SoftwareIsApproved(String name, String version, String market)
+        {
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.SoftwareName == name && item.Version == version && item.Market == market)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public int GetSoftwareStatus(String version, String market)
+        {
+            int status = 0;
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.Version == version && item.Market == market)
+                {
+                    switch (item.Status)
+                    {
+                        case ReleaseStatus.NONE:
+                            status = 0;
+                            break;
+                        case ReleaseStatus.DEVELOPMENT:
+                            status = 1;
+                            break;
+                        case ReleaseStatus.TESTING:
+                            status = 2;
+                            break;
+                        case ReleaseStatus.SUBMITTED:
+                            status = 3;
+                            break;
+                        case ReleaseStatus.APPROVED:
+                            status = 4;
+                            break;
+                    }
+                }
+            }
+            return status;
+        }
+
+        public String GetHMAC(String version, String market)
+        {
+            String temp = "";
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.Version == version && item.Market == market)
+                {
+                    temp = item.HMAC;
+                }
+            }
+            return temp;
+        }
+
+        public String GetSHA1(String version, String market)
+        {
+            String temp = "";
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.Version == version && item.Market == market)
+                {
+                    temp = item.SHA1;
+                }
+            }
+            return temp;
+        }
+
+        public ReleaseDataItem FindLastRelease(String Market)
+        {
+            // check to see if we've loaded the data.
+            if (mFilePath == null)
+                return null;
+
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.Market == Market)
+                    return item;
+            }
+            // market not found.
+            return null;
+        }
+
+        public ReleaseDataItem FindItem(String Version, String Market)
+        {
+            // check to see if we've loaded the data.
+            if (mFilePath == null)
+                return null;
+
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.Market == Market && item.Version == Version)
+                    return item;
+            }
+            // market not found.
+            return null;
         }
 
         public bool Read()
@@ -246,9 +537,9 @@ namespace RevEdit
             return true;
         }
 
-        public bool Release(String Market, String Name, String Version, String Label, String Platform, String Date, String Notes)
+        public bool Release(String Market, String Name, String Version, String Label, String Platform, String Date, String sha1, String hmac, String Notes, ReleaseStatus Status, bool isPlatform)
         {
-            if (Market == "" || Name == "" || Version == "" || Label == "" || Platform == "" || Date == "")
+            if (Market == "" || Name == "" || Version == "" || Label == "" || Platform == "" || Date == "" || sha1 == "" || hmac == "")
             {
                 MessageBox.Show("Missing Release information:" + Environment.NewLine +
                                 "Market    : " + Market + Environment.NewLine +
@@ -256,14 +547,33 @@ namespace RevEdit
                                 "Version   : " + Version + Environment.NewLine +
                                 "Label     : " + Label + Environment.NewLine +
                                 "Platform  : " + Platform + Environment.NewLine +
+                                "SHA1      : " + sha1 + Environment.NewLine +
+                                "HMAC      : " + hmac + Environment.NewLine +
                                 "Date      : " + Date + Environment.NewLine, "Release Data Incomplete", MessageBoxButtons.OK);
                 return false;
             }
+            foreach (ReleaseDataItem item in mReleaseData)
+            {
+                if (item.Version == Version && item.Market == Market)
+                {
+                    // this is an update to an existing release.
+                    item.ReleaseLabel = Label;
+                    item.Platform = Platform;
+                    item.ReleaseDate = Date;
+                    item.SoftwareName = Name;
+                    item.IsPlatform = isPlatform;
+                    item.Status = Status;
+                    item.SHA1 = sha1;
+                    item.HMAC = hmac;
+                    item.Notes = Notes;
+                    return true;
+                }
+            }
             // No matching release in the indicated market, add new release data to the list
-            return AddRelease(Market, Name, Version, Label, Platform, Date, Notes);
+            return AddRelease(Market, Name, Version, Label, Platform, Date, sha1, hmac, Notes, Status, isPlatform);
         }
 
-        private bool AddRelease(String Market, String Name, String Version, String Label, String Platform, String Date, String Notes)
+        private bool AddRelease(String Market, String Name, String Version, String Label, String Platform, String Date, String sha1, String hmac, String Notes, ReleaseStatus Status, bool isPlatform)
         {
             if (mFilePath == null)
                 return false;
@@ -275,25 +585,14 @@ namespace RevEdit
             node.ReleaseLabel = Label;
             node.Platform = Platform;
             node.ReleaseDate = Date;
-            node.GameName = Name;
+            node.SoftwareName = Name;
+            node.IsPlatform = isPlatform;
+            node.Status = Status;
+            node.SHA1 = sha1;
+            node.HMAC = hmac;
             node.Notes = Notes;
             mReleaseData.Add(node);
             return true;
-        }
-
-        public ReleaseDataItem FindLastRelease(String Market)
-        {
-            // check to see if we've loaded the data.
-            if (mFilePath == null)
-                return null;
-
-            foreach (ReleaseDataItem item in mReleaseData)
-            {
-                if (item.Market == Market)
-                    return item;
-            }
-            // market not found.
-            return null;
         }
     }
 }
