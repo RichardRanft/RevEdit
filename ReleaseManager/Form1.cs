@@ -80,6 +80,15 @@ namespace ReleaseManager
             }
         }
 
+        private void refreshTitles()
+        {
+            cbSoftwareName.Items.Clear();
+            foreach (String title in mManager.GetAllTitles())
+            {
+                cbSoftwareName.Items.Add(title);
+            }
+        }
+
         private void updateSoftwareData()
         {
             cbMarket.Items.Clear();
@@ -160,6 +169,7 @@ namespace ReleaseManager
                     tbHMAC.Text = "";
                     tbSHA1.Text = "";
                     cbPlatform.SelectedIndex = 0;
+                    ckbIsPlatform.Checked = false;
                     tbReleaseNotes.Text = "";
                     tbLabel.Text = "";
                     return;
@@ -168,6 +178,7 @@ namespace ReleaseManager
                 tbHMAC.Text = item.HMAC;
                 tbSHA1.Text = item.SHA1;
                 cbPlatform.SelectedIndex = cbPlatform.FindString(item.Platform);
+                ckbIsPlatform.Checked = item.IsPlatform;
                 tbReleaseNotes.Text = item.Notes;
                 tbLabel.Text = item.ReleaseLabel;
                 dtpReleaseDate.Value = DateTime.Parse(item.ReleaseDate);
@@ -177,6 +188,7 @@ namespace ReleaseManager
             tbHMAC.Text = "";
             tbSHA1.Text = "";
             cbPlatform.SelectedIndex = 0;
+            ckbIsPlatform.Checked = false;
             tbReleaseNotes.Text = "";
             tbLabel.Text = "";
         }
@@ -197,6 +209,7 @@ namespace ReleaseManager
                     tbHMAC.Text = "";
                     tbSHA1.Text = "";
                     cbPlatform.SelectedIndex = 0;
+                    ckbIsPlatform.Checked = false;
                     tbReleaseNotes.Text = "";
                     tbLabel.Text = "";
                     return;
@@ -205,6 +218,7 @@ namespace ReleaseManager
                 tbHMAC.Text = item.HMAC;
                 tbSHA1.Text = item.SHA1;
                 cbPlatform.SelectedIndex = cbPlatform.FindString(item.Platform);
+                ckbIsPlatform.Checked = item.IsPlatform;
                 tbReleaseNotes.Text = item.Notes;
                 tbLabel.Text = item.ReleaseLabel;
                 dtpReleaseDate.Value = DateTime.Parse(item.ReleaseDate);
@@ -214,6 +228,7 @@ namespace ReleaseManager
             tbHMAC.Text = "";
             tbSHA1.Text = "";
             cbPlatform.SelectedIndex = 0;
+            ckbIsPlatform.Checked = false;
             tbReleaseNotes.Text = "";
             tbLabel.Text = "";
         }
@@ -223,29 +238,40 @@ namespace ReleaseManager
 
         }
 
+        private ReleaseStatus translateToStatus(int value)
+        {
+            ReleaseStatus status = ReleaseStatus.NONE;
+            switch (cbReleaseStatus.SelectedIndex)
+            {
+                case 0:
+                    status = ReleaseStatus.NONE;
+                    break;
+                case 1:
+                    status = ReleaseStatus.DEVELOPMENT;
+                    break;
+                case 2:
+                    status = ReleaseStatus.TESTING;
+                    break;
+                case 3:
+                    status = ReleaseStatus.SUBMITTED;
+                    break;
+                case 4:
+                    status = ReleaseStatus.APPROVED;
+                    break;
+            }
+            return status;
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             if (mIsConnected)
             {
-                ReleaseStatus status = ReleaseStatus.NONE;
-                switch (cbReleaseStatus.SelectedIndex)
-                {
-                    case 0:
-                        status = ReleaseStatus.NONE;
-                        break;
-                    case 1:
-                        status = ReleaseStatus.DEVELOPMENT;
-                        break;
-                    case 2:
-                        status = ReleaseStatus.TESTING;
-                        break;
-                    case 3:
-                        status = ReleaseStatus.SUBMITTED;
-                        break;
-                    case 4:
-                        status = ReleaseStatus.APPROVED;
-                        break;
-                }
+
+                // If this is a platform release ensure that the platform text is the same as 
+                // the software version.
+                if (ckbIsPlatform.Checked)
+                    cbPlatform.Text = cbSoftwareVersion.Text;
+
                 if (mManager.Release(cbMarket.Text,
                     cbSoftwareName.Text,
                     cbSoftwareVersion.Text,
@@ -255,13 +281,14 @@ namespace ReleaseManager
                     tbSHA1.Text,
                     tbHMAC.Text,
                     tbReleaseNotes.Text,
-                    status,
+                    translateToStatus(cbReleaseStatus.SelectedIndex),
                     ckbIsPlatform.Checked))
                 {
                     mManager.Write();
                     svnProvider.Commit();
                 }
                 updateSoftwareData();
+                refreshTitles();
             }
         }
     }

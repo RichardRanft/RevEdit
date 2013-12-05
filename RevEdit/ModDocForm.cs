@@ -285,7 +285,11 @@ namespace RevEdit
                     mReleaseForm.Label,
                     mReleaseForm.Platform,
                     mReleaseForm.Date,
-                    mReleaseForm.ReleaseNotes))
+                    this.mSHA1,
+                    this.mHMAC,
+                    mReleaseForm.ReleaseNotes,
+                    ReleaseStatus.TESTING,
+                    false))
                 return;
             }
             mReleaseManager.Write();

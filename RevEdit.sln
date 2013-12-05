@@ -7,6 +7,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReleaseManager", "ReleaseManager\ReleaseManager.csproj", "{4E1EDD44-C1FA-4CE6-9668-A0507B31653F}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupReleaseManager", "SetupReleaseManager\SetupReleaseManager.vdproj", "{ACE3CF55-8EF1-439A-A0C5-7A739A441982}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -24,6 +26,9 @@ Global
 		{4E1EDD44-C1FA-4CE6-9668-A0507B31653F}.Debug|x86.Build.0 = Debug|x86
 		{4E1EDD44-C1FA-4CE6-9668-A0507B31653F}.Release|x86.ActiveCfg = Release|x86
 		{4E1EDD44-C1FA-4CE6-9668-A0507B31653F}.Release|x86.Build.0 = Release|x86
+		{ACE3CF55-8EF1-439A-A0C5-7A739A441982}.Debug|x86.ActiveCfg = Debug
+		{ACE3CF55-8EF1-439A-A0C5-7A739A441982}.Release|x86.ActiveCfg = Release
+		{ACE3CF55-8EF1-439A-A0C5-7A739A441982}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
