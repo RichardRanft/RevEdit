@@ -143,7 +143,7 @@ namespace ReleaseManager
             m_client = null;
             m_strUser = "";
             m_strPassword = "";
-            m_strServer = "http://192.168.251.108";
+            m_strServer = "http://192.168.4.148";
             m_strRepository = "/svn/ReleaseData/trunk";
             m_strCheckoutPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             m_nPort = 18080;
@@ -155,7 +155,7 @@ namespace ReleaseManager
         {
             m_strUser = userName;
             m_strPassword = password;
-            m_strServer = "http://192.168.251.108";
+            m_strServer = "http://192.168.4.148";
             m_strRepository = repository;
             m_nPort = 18080;
             m_strCheckoutPath = checkoutPath;

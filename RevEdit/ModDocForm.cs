@@ -6,6 +6,12 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Security.Permissions;
+using Microsoft.Win32.SafeHandles;
+using System.Runtime.ConstrainedExecution;
+using System.Security;
 
 namespace RevEdit
 {
@@ -64,7 +70,14 @@ namespace RevEdit
         }
 
         #endregion
-        
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword,
+            int dwLogonType, int dwLogonProvider, out SafeTokenHandle phToken);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public extern static bool CloseHandle(IntPtr handle);
+
         public ModDocForm()
         {
             InitializeComponent();
@@ -196,12 +209,50 @@ namespace RevEdit
 
         private void writeFile()
         {
-            if (!Directory.Exists(mPath + @"\Documentation\moddoc"))
-                Directory.CreateDirectory(mPath + @"\Documentation\moddoc");
-            using (StreamWriter outfile = new StreamWriter(mPath + @"\Documentation\moddoc\moddoc.txt", false))
+            String[] pathParts = mPath.Split('\\');
+            String gameFolder = pathParts[pathParts.Length - 1];
+            String sharePath = @"\\LVSERVER2\Electronic Games\Engineering\Software\Release\EGM\PC4\NorthAmerica\";
+            String docPath = System.IO.Path.Combine(sharePath, gameFolder);
+            String docFolder = @"\Documentation\moddoc\";
+            String targetPath = docPath + docFolder;
+            String dirPath = docPath + docFolder;
+            String fileName = "moddoc.txt";
+            String txtFilePath = System.IO.Path.Combine(dirPath, fileName);
+            try
             {
-                foreach (String line in tbModDocPreview.Lines)
-                    outfile.WriteLine(line.ToString());
+                SafeTokenHandle handle;
+                const int LOGON32_PROVIDER_DEFAULT = 0;
+                const int LOGON32_LOGON_INTERACTIVE = 2;
+
+                bool loginSucceeded = LogonUser("S_BuildAgent", "SHUFFLE", "buildRD1!",
+                    LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, out handle);
+                if (!loginSucceeded)
+                {
+                    int ret = Marshal.GetLastWin32Error();
+                    throw new System.ComponentModel.Win32Exception(ret);
+                }
+                using (handle)
+                {
+                    using (WindowsIdentity newID = new WindowsIdentity(handle.DangerousGetHandle()))
+                    {
+                        using (WindowsImpersonationContext impersonator = newID.Impersonate())
+                        {
+                            if (!Directory.Exists(targetPath))
+                            {
+                                Directory.CreateDirectory(targetPath);
+                            }
+                            using (StreamWriter outfile = new StreamWriter(txtFilePath, false))
+                            {
+                                foreach (String line in tbModDocPreview.Lines)
+                                    outfile.WriteLine(line.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + Environment.NewLine + dirPath, "Network Connection Failure", MessageBoxButtons.OK);
             }
         }
 
@@ -315,6 +366,25 @@ namespace RevEdit
             }
             tbReleaseVersion.Text = "";
             lReleasedLabel.Text = "";
+        }
+    }
+
+    public sealed class SafeTokenHandle : SafeHandleZeroOrMinusOneIsInvalid
+    {
+        private SafeTokenHandle()
+            : base(true)
+        {
+        }
+
+        [DllImport("kernel32.dll")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [SuppressUnmanagedCodeSecurity]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool CloseHandle(IntPtr handle);
+
+        protected override bool ReleaseHandle()
+        {
+            return CloseHandle(handle);
         }
     }
 }
